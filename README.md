@@ -1,2 +1,0 @@
-# WalkAround
-SoftUni Project
