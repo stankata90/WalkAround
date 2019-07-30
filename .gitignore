@@ -1,2 +1,7 @@
 text.txt
 folder/*
+tests/*
+var/*
+vendor/*
+LICENSE
+phpunit.xml.dist
