@@ -3,6 +3,4 @@ var/*
 vendor/*
 LICENSE
 phpunit.xml.dist
-parameters.yml
-parameters.yml.dist
 .idea/*
