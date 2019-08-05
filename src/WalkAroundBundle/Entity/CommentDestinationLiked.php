@@ -118,6 +118,15 @@ class CommentDestinationLiked extends EntityRepository
     }
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="" )
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *
+     */
+    private $addUser;
+
+    /**
      * Set addedOn
      *
      * @param string $addedOn
@@ -156,5 +165,24 @@ class CommentDestinationLiked extends EntityRepository
     {
         $this->commentDestination = $commentDestination;
     }
+
+    /**
+     * @return User
+     */
+    public function getAddUser()
+    {
+        return $this->addUser;
+    }
+
+    /**
+     * @param User $addUser
+     * @return CommentDestinationLiked
+     */
+    public function setAddUser($addUser)
+    {
+        $this->addUser = $addUser;
+        return $this;
+    }
+
 }
 

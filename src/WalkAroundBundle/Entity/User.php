@@ -2,7 +2,7 @@
 
 namespace WalkAroundBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection as ArrayCollectionAlias;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -75,7 +75,7 @@ class User extends EntityRepository
     private $addedOn;
 
     /**
-     * @var ArrayCollectionAlias
+     * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Destination", mappedBy="addedUser" )
      *
@@ -83,13 +83,19 @@ class User extends EntityRepository
     private $destinations;
 
     /**
-     * @var ArrayCollectionAlias
+     * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Destination", mappedBy="approvedUser" )
      *
      */
     private $approvedDestinations;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="CommentDestinationLiked", mappedBy="addUser")
+     */
+    private $commentDestinationLikes;
 
 
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
@@ -97,8 +103,8 @@ class User extends EntityRepository
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
-        $this->destinations = new ArrayCollectionAlias();
-        $this->approvedDestinations = new ArrayCollectionAlias();
+        $this->destinations = new ArrayCollection();
+        $this->approvedDestinations = new ArrayCollection();
     }
 
     /**
@@ -280,7 +286,7 @@ class User extends EntityRepository
     }
 
     /**
-     * @return ArrayCollectionAlias
+     * @return ArrayCollection
      */
     public function getDestinations()
     {
@@ -288,7 +294,7 @@ class User extends EntityRepository
     }
 
     /**
-     * @param ArrayCollectionAlias $destination
+     * @param ArrayCollection $destination
      * @return User
      */
     public function setDestinations($destination)
@@ -298,7 +304,7 @@ class User extends EntityRepository
     }
 
     /**
-     * @return ArrayCollectionAlias
+     * @return ArrayCollection
      */
     public function getApprovedDestinations()
     {
@@ -306,7 +312,7 @@ class User extends EntityRepository
     }
 
     /**
-     * @param ArrayCollectionAlias $approvedDestination
+     * @param ArrayCollection $approvedDestination
      * @return User
      */
     public function setApprovedDestinations($approvedDestination)
@@ -314,6 +320,25 @@ class User extends EntityRepository
         $this->approvedDestinations[] = $approvedDestination;
         return $this;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getCommentDestinationLikes()
+    {
+        return $this->commentDestinationLikes;
+    }
+
+    /**
+     * @param ArrayCollection $commentDestinationLike
+     * @return User
+     */
+    public function setCommentDestinationLike($commentDestinationLike)
+    {
+        $this->commentDestinationLikes[] = $commentDestinationLike;
+        return $this;
+    }
+
 
 
 }
