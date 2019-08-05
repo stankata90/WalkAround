@@ -2,6 +2,7 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -64,10 +65,23 @@ class EventComment extends EntityRepository
     /**
      * @var int
      *
-     * @ORM\Column(name="idCommentRe", type="integer")
+     * @ORM\Column(name="idReComment", type="integer")
      */
-    private $idCommentRe;
+    private $idReComment;
 
+    /**
+     * @var EventComment;
+     *
+     * @ORM\ManyToOne(targetEntity="EventComment", inversedBy="reComments")
+     * @ORM\JoinColumn(name="idReComment", referencedColumnName="id")
+     */
+    private $comment;
+
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="EventComment", mappedBy="comment")
+     */
+    private $reComments;
     /**
      * @var \DateTime
      *
@@ -79,6 +93,8 @@ class EventComment extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+
+        $this->reComments = new ArrayCollection();
     }
 
     /**
@@ -204,13 +220,13 @@ class EventComment extends EntityRepository
     /**
      * Set idCommentRe
      *
-     * @param integer $idCommentRe
+     * @param integer $idReComment
      *
      * @return EventComment
      */
-    public function setIdCommentRe($idCommentRe)
+    public function setIdReComment($idReComment)
     {
-        $this->idCommentRe = $idCommentRe;
+        $this->idReComment = $idReComment;
 
         return $this;
     }
@@ -220,9 +236,9 @@ class EventComment extends EntityRepository
      *
      * @return int
      */
-    public function getIdCommentRe()
+    public function getIdReComment()
     {
-        return $this->idCommentRe;
+        return $this->idReComment;
     }
 
     /**
@@ -248,5 +264,40 @@ class EventComment extends EntityRepository
     {
         return $this->addedOn;
     }
+
+    /**
+     * @return EventComment
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @param EventComment $comment
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getReComments()
+    {
+        return $this->reComments;
+    }
+
+    /**
+     * @param ArrayCollection $reComment
+     * @return EventComment
+     */
+    public function setReComments($reComment)
+    {
+        $this->reComments[] = $reComment;
+        return $this;
+    }
+
 }
 
