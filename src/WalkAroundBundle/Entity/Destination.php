@@ -2,6 +2,7 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -132,6 +133,15 @@ class Destination extends EntityRepository
      * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
      */
     private $region;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="CommentDestination", mappedBy="destination")
+     *
+     */
+    private $comments;
+
 
 
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
@@ -421,7 +431,7 @@ class Destination extends EntityRepository
      *
      * @return Destination
      */
-    public function setRegion( $regionId )
+    public function setRegionId($regionId )
     {
         $this->regionId = $regionId;
 
@@ -433,9 +443,80 @@ class Destination extends EntityRepository
      *
      * @return int
      */
-    public function getRegion()
+    public function getRegionId()
     {
         return $this->regionId;
     }
+
+    /**
+     * @return User
+     */
+    public function getAddedUser()
+    {
+        return $this->addedUser;
+    }
+
+    /**
+     * @param User $addedUser
+     */
+    public function setAddedUser($addedUser)
+    {
+        $this->addedUser = $addedUser;
+    }
+
+    /**
+     * @return User
+     */
+    public function getApprovedUser()
+    {
+        return $this->approvedUser;
+    }
+
+    /**
+     * @param User $approvedUser
+     */
+    public function setApprovedUser($approvedUser)
+    {
+        $this->approvedUser = $approvedUser;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param ArrayCollection $comment
+     * @return Destination
+     */
+    public function setComments($comment)
+    {
+        $this->comments[] = $comment;
+        return $this;
+    }
+
+    /**
+     * @return Region
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    /**
+     * @param Region $region
+     * @return Destination
+     */
+    public function setRegion($region)
+    {
+        $this->region = $region;
+        return $this;
+    }
+
+
+
 }
 

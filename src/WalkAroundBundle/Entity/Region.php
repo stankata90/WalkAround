@@ -81,5 +81,25 @@ class Region extends EntityRepository
     {
         return $this->name;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getDestinations()
+    {
+        return $this->destinations;
+    }
+
+    /**
+     * @param ArrayCollection $destination
+     * @return Region
+     */
+    public function setDestinations($destination)
+    {
+        $this->destinations[] = $destination;
+        return $this;
+    }
+
+
 }
 

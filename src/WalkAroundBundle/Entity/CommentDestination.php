@@ -2,6 +2,7 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -32,6 +33,14 @@ class CommentDestination extends EntityRepository
     private $destinationId;
 
     /**
+     * @var Destination
+     *
+     * @ORM\ManyToOne(targetEntity="Destination", inversedBy="comments")
+     * @ORM\JoinColumn(name="destination_id", referencedColumnName="id")
+     */
+    private $destination;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="addedOn", type="datetime")
@@ -44,6 +53,13 @@ class CommentDestination extends EntityRepository
      * @ORM\Column(name="addedBy", type="integer")
      */
     private $addedBy;
+
+    /**
+     * @var User
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="commentsDestination")
+     * @ORM\JoinColumn( name="addedBy", referencedColumnName="id")
+     */
+    private $addedUser;
 
     /**
      * @var string
@@ -59,10 +75,28 @@ class CommentDestination extends EntityRepository
      */
     private $idCommentRe;
 
+    /**
+     * @var CommentDestination
+     *
+     * @ORM\ManyToOne( targetEntity="CommentDestination", inversedBy="comments")
+     * @ORM\JoinColumn( name="idCommentRe", referencedColumnName="id")
+     */
+    private $commentsRe;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany( targetEntity="CommentDestination", mappedBy="commentsRe")
+     */
+    private $comments;
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+
+        $this->comments = new ArrayCollection();
+
     }
 
     /**
@@ -194,5 +228,79 @@ class CommentDestination extends EntityRepository
     {
         return $this->idCommentRe;
     }
+
+    /**
+     * @return Destination
+     */
+    public function getDestination()
+    {
+        return $this->destination;
+    }
+
+    /**
+     * @param Destination $destination
+     * @return CommentDestination
+     */
+    public function setDestination($destination)
+    {
+        $this->destination = $destination;
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getAddedUser()
+    {
+        return $this->addedUser;
+    }
+
+    /**
+     * @param User $addedUser
+     * @return CommentDestination
+     */
+    public function setAddedUser($addedUser)
+    {
+        $this->addedUser = $addedUser;
+        return $this;
+    }
+
+    /**
+     * @return CommentDestination
+     */
+    public function getCommentsRe()
+    {
+        return $this->commentsRe;
+    }
+
+    /**
+     * @param CommentDestination $commentsRe
+     * @return CommentDestination
+     */
+    public function setCommentsRe($commentsRe)
+    {
+        $this->commentsRe = $commentsRe;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param ArrayCollection $comment
+     * @return CommentDestination
+     */
+    public function setComments($comment)
+    {
+        $this->comments[] = $comment;
+        return $this;
+    }
+
+
 }
 

@@ -2,7 +2,7 @@
 
 namespace WalkAroundBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\ArrayCollection as ArrayCollectionAlias;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -75,7 +75,7 @@ class User extends EntityRepository
     private $addedOn;
 
     /**
-     * @var ArrayCollection
+     * @var ArrayCollectionAlias
      *
      * @ORM\OneToMany(targetEntity="Destination", mappedBy="addedUser" )
      *
@@ -83,20 +83,22 @@ class User extends EntityRepository
     private $destinations;
 
     /**
-     * @var ArrayCollection
+     * @var ArrayCollectionAlias
      *
      * @ORM\OneToMany(targetEntity="Destination", mappedBy="approvedUser" )
      *
      */
     private $approvedDestinations;
 
+
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
-        $this->destinations = new ArrayCollection();
-        $this->approvedDestinations = new ArrayCollection();
+        $this->destinations = new ArrayCollectionAlias();
+        $this->approvedDestinations = new ArrayCollectionAlias();
     }
 
     /**
@@ -276,5 +278,43 @@ class User extends EntityRepository
     {
         return $this->addedOn;
     }
+
+    /**
+     * @return ArrayCollectionAlias
+     */
+    public function getDestinations()
+    {
+        return $this->destinations;
+    }
+
+    /**
+     * @param ArrayCollectionAlias $destination
+     * @return User
+     */
+    public function setDestinations($destination)
+    {
+        $this->destinations[] = $destination;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollectionAlias
+     */
+    public function getApprovedDestinations()
+    {
+        return $this->approvedDestinations;
+    }
+
+    /**
+     * @param ArrayCollectionAlias $approvedDestination
+     * @return User
+     */
+    public function setApprovedDestinations($approvedDestination)
+    {
+        $this->approvedDestinations[] = $approvedDestination;
+        return $this;
+    }
+
+
 }
 
