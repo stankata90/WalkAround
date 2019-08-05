@@ -75,6 +75,12 @@ class Event extends EntityRepository
      */
     private $eventComments;
 
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="EventUser", mappedBy="event")
+     */
+    private $eventUsers;
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
@@ -241,6 +247,25 @@ class Event extends EntityRepository
         $this->eventComments[] = $eventComment;
         return $this;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getEventUsers()
+    {
+        return $this->eventUsers;
+    }
+
+    /**
+     * @param ArrayCollection $eventUsers
+     * @return Event
+     */
+    public function setEventUsers($eventUsers)
+    {
+        $this->eventUsers = $eventUsers;
+        return $this;
+    }
+
 
 
 }

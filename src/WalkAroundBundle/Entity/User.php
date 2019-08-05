@@ -110,6 +110,12 @@ class User extends EntityRepository
      */
     private $createdEventsDestinations;
 
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany( targetEntity="EventUser", mappedBy="user")
+     */
+    private $eventsDestinations;
+
 
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
@@ -121,6 +127,7 @@ class User extends EntityRepository
         $this->commentsDestinationLikes = new ArrayCollection();
         $this->likesDestinations = new ArrayCollection();
         $this->createdEventsDestinations = new ArrayCollection();
+        $this->eventsDestinations = new ArrayCollection();
     }
 
     /**
@@ -390,6 +397,27 @@ class User extends EntityRepository
         $this->createdEventsDestinations[] = $createEventDestination;
         return $this;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getEventsDestinations()
+    {
+        return $this->eventsDestinations;
+    }
+
+    /**
+     *
+     * @param ArrayCollection $eventDestination
+     * @return User
+     */
+    public function setEntDestination($eventDestination)
+    {
+        $this->eventsDestinations[] = $eventDestination;
+        return $this;
+    }
+
+
 
 }
 

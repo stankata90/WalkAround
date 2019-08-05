@@ -32,11 +32,29 @@ class EventUser extends EntityRepository
     private $eventId;
 
     /**
+     * @var Event
+     *
+     * @ORM\ManyToOne(targetEntity="Event", inversedBy="eventUsers")
+     * @ORM\JoinColumn(name="event_id", referencedColumnName="id")
+     *
+     */
+    private $event;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="user_id", type="integer")
      */
     private $userId;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="events")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *
+     */
+    private $user;
 
     /**
      * @var string
@@ -86,6 +104,27 @@ class EventUser extends EntityRepository
     }
 
     /**
+     * @return Event
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+    /**
+     *
+     * @param Event $event
+     * @return EventUser
+     */
+    public function setEvent($event)
+    {
+        $this->event = $event;
+        return $this;
+    }
+
+
+
+    /**
      * Set userId
      *
      * @param integer $userId
@@ -108,6 +147,26 @@ class EventUser extends EntityRepository
     {
         return $this->userId;
     }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     * @return EventUser
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+
 
     /**
      * Set accepted
