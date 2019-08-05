@@ -156,6 +156,15 @@ class Destination extends EntityRepository
      */
     private $eventsDestinations;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="City", inversedBy="destinations")
+     * @ORM\JoinTable(name="destination_city")
+     *
+     */
+    private $citiesTags;
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
@@ -567,6 +576,25 @@ class Destination extends EntityRepository
         $this->eventsDestinations[] = $eventDestination;
         return $this;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getCitiesTags()
+    {
+        return $this->citiesTags;
+    }
+
+    /**
+     * @param ArrayCollection $cityTag
+     * @return Destination
+     */
+    public function setCityTag($cityTag)
+    {
+        $this->citiesTags[] = $cityTag;
+        return $this;
+    }
+
 
 
 
