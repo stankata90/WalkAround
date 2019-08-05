@@ -120,7 +120,7 @@ class CommentDestinationLiked extends EntityRepository
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="" )
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="commentsDestinationLikes" )
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *
      */

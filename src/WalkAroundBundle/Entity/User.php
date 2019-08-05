@@ -80,7 +80,7 @@ class User extends EntityRepository
      * @ORM\OneToMany(targetEntity="Destination", mappedBy="addedUser" )
      *
      */
-    private $destinations;
+    private $addDestinations;
 
     /**
      * @var ArrayCollection
@@ -95,7 +95,14 @@ class User extends EntityRepository
      *
      * @ORM\OneToMany(targetEntity="CommentDestinationLiked", mappedBy="addUser")
      */
-    private $commentDestinationLikes;
+    private $commentsDestinationLikes;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="DestinationLiked", mappedBy="likedUser")
+     */
+    private $likesDestinations;
 
 
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
@@ -103,8 +110,10 @@ class User extends EntityRepository
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
-        $this->destinations = new ArrayCollection();
+        $this->addDestinations = new ArrayCollection();
         $this->approvedDestinations = new ArrayCollection();
+        $this->commentsDestinationLikes = new ArrayCollection();
+        $this->likesDestinations = new ArrayCollection();
     }
 
     /**
@@ -288,18 +297,18 @@ class User extends EntityRepository
     /**
      * @return ArrayCollection
      */
-    public function getDestinations()
+    public function getAddDestinations()
     {
-        return $this->destinations;
+        return $this->addDestinations;
     }
 
     /**
      * @param ArrayCollection $destination
      * @return User
      */
-    public function setDestinations($destination)
+    public function setAddDestinations($destination)
     {
-        $this->destinations[] = $destination;
+        $this->addDestinations[] = $destination;
         return $this;
     }
 
@@ -324,9 +333,9 @@ class User extends EntityRepository
     /**
      * @return ArrayCollection
      */
-    public function getCommentDestinationLikes()
+    public function getCommentsDestinationLikes()
     {
-        return $this->commentDestinationLikes;
+        return $this->commentsDestinationLikes;
     }
 
     /**
@@ -335,7 +344,25 @@ class User extends EntityRepository
      */
     public function setCommentDestinationLike($commentDestinationLike)
     {
-        $this->commentDestinationLikes[] = $commentDestinationLike;
+        $this->commentsDestinationLikes[] = $commentDestinationLike;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getLikesDestinations()
+    {
+        return $this->likesDestinations;
+    }
+
+    /**
+     * @param ArrayCollection $likesDestination
+     * @return User
+     */
+    public function setLikeDestination($likesDestination)
+    {
+        $this->likesDestinations[] = $likesDestination;
         return $this;
     }
 

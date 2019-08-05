@@ -45,6 +45,23 @@ class DestinationLiked extends EntityRepository
      */
     private $addedOn;
 
+    /**
+     * @var Destination
+     *
+     * @ORM\ManyToOne(targetEntity="Destination", inversedBy="likesUsers")
+     * @ORM\JoinColumn(name="destination_id", referencedColumnName="id")
+     *
+     */
+    private $likedDestination;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="likesDestinations")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $likedUser;
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
@@ -132,5 +149,44 @@ class DestinationLiked extends EntityRepository
     {
         return $this->addedOn;
     }
+
+    /**
+     * @return Destination
+     */
+    public function getLikedDestination()
+    {
+        return $this->likedDestination;
+    }
+
+    /**
+     * @param Destination $likedDestination
+     * @return DestinationLiked
+     */
+    public function setLikedDestination($likedDestination)
+    {
+        $this->likedDestination = $likedDestination;
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getLikedUser()
+    {
+        return $this->likedUser;
+    }
+
+    /**
+     * @param User $likedUser
+     * @return DestinationLiked
+     */
+    public function setLikedUser($likedUser)
+    {
+        $this->likedUser = $likedUser;
+        return $this;
+    }
+
+
+
 }
 

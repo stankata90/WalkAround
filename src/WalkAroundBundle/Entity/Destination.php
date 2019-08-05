@@ -84,7 +84,7 @@ class Destination extends EntityRepository
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="WalkAroundBundle\Entity\User", inversedBy="destinations")
+     * @ORM\ManyToOne(targetEntity="WalkAroundBundle\Entity\User", inversedBy="addDestinations")
      * @ORM\JoinColumn(name="addedBy", referencedColumnName="id")
      */
     private $addedUser;
@@ -140,14 +140,22 @@ class Destination extends EntityRepository
      * @ORM\OneToMany(targetEntity="CommentDestination", mappedBy="destination")
      *
      */
-    private $comments;
+    private $commentsUsers;
 
-
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany( targetEntity="DestinationLiked", mappedBy="likedDestination")
+     */
+    private $likesUsers;
 
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+
+        $this->commentsUsers = new ArrayCollection();
+        $this->likesUsers = new ArrayCollection();
     }
 
     /**
@@ -483,18 +491,18 @@ class Destination extends EntityRepository
     /**
      * @return ArrayCollection
      */
-    public function getComments()
+    public function getCommentsUsers()
     {
-        return $this->comments;
+        return $this->commentsUsers;
     }
 
     /**
      * @param ArrayCollection $comment
      * @return Destination
      */
-    public function setComments($comment)
+    public function setCommentsUsers($comment)
     {
-        $this->comments[] = $comment;
+        $this->commentsUsers[] = $comment;
         return $this;
     }
 
@@ -513,6 +521,24 @@ class Destination extends EntityRepository
     public function setRegion($region)
     {
         $this->region = $region;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getLikesUsers()
+    {
+        return $this->likesUsers;
+    }
+
+    /**
+     * @param ArrayCollection $likeUser
+     * @return Destination
+     */
+    public function setLikeUser($likeUser)
+    {
+        $this->likesUsers[] = $likeUser;
         return $this;
     }
 
