@@ -2,6 +2,9 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="event_user")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\EventUserRepository")
  */
-class EventUser
+class EventUser extends EntityRepository
 {
     /**
      * @var int
@@ -42,6 +45,11 @@ class EventUser
      */
     private $accepted;
 
+    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    {
+        /** @var EntityManager $em */
+        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+    }
 
     /**
      * Get id

@@ -2,6 +2,9 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="message")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\MessageRepository")
  */
-class Message
+class Message extends EntityRepository
 {
     /**
      * @var int
@@ -70,6 +73,11 @@ class Message
      */
     private $content;
 
+    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    {
+        /** @var EntityManager $em */
+        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+    }
 
     /**
      * Get id
