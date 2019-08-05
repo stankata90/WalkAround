@@ -39,6 +39,22 @@ class Message extends EntityRepository
     private $forId;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="sendMessages")
+     * @ORM\JoinColumn(name="from_id", referencedColumnName="id")
+     */
+    private $fromUser;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="receivedMessages")
+     * @ORM\JoinColumn(name="for_id", referencedColumnName="id")
+     */
+    private $forUser;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="seen", type="integer")
@@ -160,6 +176,44 @@ class Message extends EntityRepository
     {
         return $this->seen;
     }
+
+    /**
+     * @return User
+     */
+    public function getFromUser()
+    {
+        return $this->fromUser;
+    }
+
+    /**
+     * @param User $fromUser
+     * @return Message
+     */
+    public function setFromUser($fromUser)
+    {
+        $this->fromUser = $fromUser;
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getForUser()
+    {
+        return $this->forUser;
+    }
+
+    /**
+     * @param User $forUser
+     * @return Message
+     */
+    public function setForUser($forUser)
+    {
+        $this->forUser = $forUser;
+        return $this;
+    }
+
+
 
     /**
      * Set seenOn
