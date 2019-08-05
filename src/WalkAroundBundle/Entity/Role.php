@@ -2,6 +2,7 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -31,10 +32,19 @@ class Role extends EntityRepository
      */
     private $name;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="User", inversedBy="roles")
+     */
+
+    private $users;
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+        $this->users = new ArrayCollection();
     }
 
     /**
@@ -70,5 +80,26 @@ class Role extends EntityRepository
     {
         return $this->name;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
+    /**
+     * @param ArrayCollection $user
+     * @return Role
+     */
+    public function setUser($user)
+    {
+        $this->users[] = $user;
+        return $this;
+    }
+
+
+
 }
 

@@ -128,6 +128,13 @@ class User extends EntityRepository
      */
     private $receivedMessages;
 
+    /**
+     * @var ArrayCollection
+     * @ORM\ManyToMany(targetEntity="Role", mappedBy="users")
+     * @ORM\JoinTable(name="user_role")
+     */
+    private $roles;
+
 
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
@@ -142,6 +149,7 @@ class User extends EntityRepository
         $this->eventsDestinations = new ArrayCollection();
         $this->sendMessages = new ArrayCollection();
         $this->receivedMessages = new ArrayCollection();
+        $this->roles = new ArrayCollection();
     }
 
     /**
@@ -465,6 +473,22 @@ class User extends EntityRepository
     {
         $this->receivedMessages[] = $receivedMessage;
         return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param ArrayCollection $role
+     */
+    public function setRole($role)
+    {
+        $this->roles = $role;
     }
 
 

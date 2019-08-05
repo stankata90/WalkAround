@@ -173,6 +173,7 @@ class Destination extends EntityRepository
         $this->commentsUsers = new ArrayCollection();
         $this->likesUsers = new ArrayCollection();
         $this->eventsDestinations = new ArrayCollection();
+        $this->citiesTags = new ArrayCollection();
     }
 
     /**
@@ -594,9 +595,6 @@ class Destination extends EntityRepository
         $this->citiesTags[] = $cityTag;
         return $this;
     }
-
-
-
 
 }
 
