@@ -86,6 +86,14 @@ class CommentDestinationLiked extends EntityRepository
     }
 
     /**
+     * @var CommentDestination
+     *
+     * @ORM\ManyToOne(targetEntity="CommentDestination", inversedBy="likes")
+     * @ORM\JoinColumn( name="comment_id", referencedColumnName="id")
+     */
+    private $commentDestination;
+
+    /**
      * Set userId
      *
      * @param integer $userId
@@ -131,6 +139,22 @@ class CommentDestinationLiked extends EntityRepository
     public function getAddedOn()
     {
         return $this->addedOn;
+    }
+
+    /**
+     * @return CommentDestination
+     */
+    public function getCommentDestination()
+    {
+        return $this->commentDestination;
+    }
+
+    /**
+     * @param CommentDestination $commentDestination
+     */
+    public function setCommentDestination($commentDestination)
+    {
+        $this->commentDestination = $commentDestination;
     }
 }
 

@@ -90,12 +90,20 @@ class CommentDestination extends EntityRepository
      */
     private $comments;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="CommentDestinationLiked", mappedBy="commentDestination")
+     */
+    private $likes;
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
         $this->comments = new ArrayCollection();
+        $this->likes = new ArrayCollection();
 
     }
 
@@ -298,6 +306,24 @@ class CommentDestination extends EntityRepository
     public function setComments($comment)
     {
         $this->comments[] = $comment;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getLikes()
+    {
+        return $this->likes;
+    }
+
+    /**
+     * @param ArrayCollection $like
+     * @return CommentDestination
+     */
+    public function setLike($like)
+    {
+        $this->likes[] = $like;
         return $this;
     }
 
