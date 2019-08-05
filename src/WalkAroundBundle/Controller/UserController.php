@@ -3,11 +3,12 @@
 namespace WalkAroundBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\BrowserKit\Response;
 
 class UserController extends Controller
 {
     public function indexAction($name)
     {
-        return $this->render('', array('name' => $name));
+        return new Response( 'aaaa' );
     }
 }

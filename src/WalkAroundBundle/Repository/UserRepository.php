@@ -2,6 +2,7 @@
 
 namespace SoftUniBlogBundle\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\OptimisticLockException;
 use SoftUniBlogBundle\Entity\User;
@@ -14,7 +15,7 @@ use SoftUniBlogBundle\Entity\User;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function __construct($em, Mapping\ClassMetadata $class = null )
+    public function __construct( EntityManagerInterface $em, Mapping\ClassMetadata $class = null )
     {
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( User::class ) : $class );
     }
