@@ -39,6 +39,22 @@ class Friend extends EntityRepository
     private $acceptedId;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="friends")
+     * @ORM\JoinColumn(name="sent_id", referencedColumnName="id")
+     */
+    private $sentUser;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="friends")
+     * @ORM\JoinColumn(name="accepted_id", referencedColumnName="id")
+     */
+    private $acceptedUser;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="addedOn", type="datetime")
@@ -107,6 +123,42 @@ class Friend extends EntityRepository
     public function getAcceptedId()
     {
         return $this->acceptedId;
+    }
+
+    /**
+     * @return User
+     */
+    public function getSentUser()
+    {
+        return $this->sentUser;
+    }
+
+    /**
+     * @param User $sentUser
+     * @return Friend
+     */
+    public function setSentUser($sentUser)
+    {
+        $this->sentUser = $sentUser;
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getAcceptedUser()
+    {
+        return $this->acceptedUser;
+    }
+
+    /**
+     * @param User $acceptedUser
+     * @return Friend
+     */
+    public function setAcceptedUser($acceptedUser)
+    {
+        $this->acceptedUser = $acceptedUser;
+        return $this;
     }
 
     /**
