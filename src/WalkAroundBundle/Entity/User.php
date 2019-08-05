@@ -93,6 +93,14 @@ class User extends EntityRepository
     /**
      * @var ArrayCollection
      *
+     * @ORM\OneToMany(targetEntity="CommentDestination", mappedBy="addedUser" )
+     *
+     */
+    private $commentsDestination;
+
+    /**
+     * @var ArrayCollection
+     *
      * @ORM\OneToMany(targetEntity="CommentDestinationLiked", mappedBy="addUser")
      */
     private $commentsDestinationLikes;
@@ -363,6 +371,24 @@ class User extends EntityRepository
     public function setApprovedDestinations($approvedDestination)
     {
         $this->approvedDestinations[] = $approvedDestination;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getCommentsDestination()
+    {
+        return $this->commentsDestination;
+    }
+
+    /**
+     * @param ArrayCollection $commentDestination
+     * @return User
+     */
+    public function setCommentDestination($commentDestination)
+    {
+        $this->commentsDestination[] = $commentDestination;
         return $this;
     }
 

@@ -318,6 +318,7 @@ class CommentDestination extends EntityRepository
     }
 
     /**
+     *
      * @param ArrayCollection $like
      * @return CommentDestination
      */
