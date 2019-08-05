@@ -81,6 +81,15 @@ class Destination extends EntityRepository
     private $addedBy;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="WalkAroundBundle\Entity\User", inversedBy="destinations")
+     * @ORM\JoinColumn(name="addedBy", referencedColumnName="id")
+     */
+    private $addedUser;
+
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="approvedOn", type="datetime")
@@ -95,6 +104,14 @@ class Destination extends EntityRepository
     private $approvedBy;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="approvedDestinations")
+     * @ORM\JoinColumn(name="approvedBy", referencedColumnName="id")
+     */
+    private $approvedUser;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="image", type="string", length=255)
@@ -104,9 +121,18 @@ class Destination extends EntityRepository
     /**
      * @var int
      *
-     * @ORM\Column(name="region", type="integer")
+     * @ORM\Column(name="region_id", type="integer")
+     */
+    private $regionId;
+
+    /**
+     * @var Region
+     *
+     * @ORM\ManyToOne(targetEntity="Region", inversedBy="destinations")
+     * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
      */
     private $region;
+
 
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
@@ -391,13 +417,13 @@ class Destination extends EntityRepository
     /**
      * Set region
      *
-     * @param integer $region
+     * @param integer $regionId
      *
      * @return Destination
      */
-    public function setRegion($region)
+    public function setRegion( $regionId )
     {
-        $this->region = $region;
+        $this->regionId = $regionId;
 
         return $this;
     }
@@ -409,7 +435,7 @@ class Destination extends EntityRepository
      */
     public function getRegion()
     {
-        return $this->region;
+        return $this->regionId;
     }
 }
 

@@ -2,15 +2,19 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * User
  *
  * @ORM\Table(name="user")
- * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="\WalkAroundBundle\Repository\UserRepository")
  */
-class User
+class User extends EntityRepository
 {
     /**
      * @var int
@@ -70,6 +74,30 @@ class User
      */
     private $addedOn;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Destination", mappedBy="addedUser" )
+     *
+     */
+    private $destinations;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Destination", mappedBy="approvedUser" )
+     *
+     */
+    private $approvedDestinations;
+
+    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    {
+        /** @var EntityManager $em */
+        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+
+        $this->destinations = new ArrayCollection();
+        $this->approvedDestinations = new ArrayCollection();
+    }
 
     /**
      * Get id
