@@ -32,11 +32,27 @@ class EventComment extends EntityRepository
     private $eventId;
 
     /**
+     * @var Event
+     * @ORM\ManyToOne(targetEntity="Event", inversedBy="eventComments")
+     * @ORM\JoinColumn(name="event_id", referencedColumnName="id")
+     *
+     */
+    private $event;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="user_id", type="integer")
      */
     private $userId;
+
+    /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $addUser;
+
 
     /**
      * @var string
@@ -100,6 +116,26 @@ class EventComment extends EntityRepository
     }
 
     /**
+     * @return Event
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+    /**
+     * @param Event $event
+     * @return EventComment
+     */
+    public function setEvent($event)
+    {
+        $this->event = $event;
+        return $this;
+    }
+
+
+
+    /**
      * Set userId
      *
      * @param integer $userId
@@ -121,6 +157,24 @@ class EventComment extends EntityRepository
     public function getUserId()
     {
         return $this->userId;
+    }
+
+    /**
+     * @return User
+     */
+    public function getAddUser()
+    {
+        return $this->addUser;
+    }
+
+    /**
+     * @param User $addUser
+     * @return EventComment
+     */
+    public function setAddUser($addUser)
+    {
+        $this->addUser = $addUser;
+        return $this;
     }
 
     /**

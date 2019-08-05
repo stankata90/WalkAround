@@ -2,6 +2,7 @@
 
 namespace WalkAroundBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -32,11 +33,27 @@ class Event extends EntityRepository
     private $destinationId;
 
     /**
+     * @var Destination
+     *
+     * @ORM\ManyToOne(targetEntity="Destination", inversedBy="eventsDestinations" )
+     * @ORM\JoinColumn(name="destination_id", referencedColumnName="id")
+     */
+    private $destination;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="user_id", type="integer")
      */
     private $userId;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="createdEventsDestinations" )
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $addUser;
 
     /**
      * @var \DateTime
@@ -52,10 +69,17 @@ class Event extends EntityRepository
      */
     private $eventOn;
 
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany( targetEntity="EventComment", mappedBy="event")
+     */
+    private $eventComments;
+
     public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
+        $this->eventComments = new ArrayCollection();
     }
 
     /**
@@ -93,6 +117,24 @@ class Event extends EntityRepository
     }
 
     /**
+     * @return Destination
+     */
+    public function getDestination()
+    {
+        return $this->destination;
+    }
+
+    /**
+     * @param Destination $destination
+     * @return Event
+     */
+    public function setDestination($destination)
+    {
+        $this->destination = $destination;
+        return $this;
+    }
+
+    /**
      * Set userId
      *
      * @param integer $userId
@@ -115,6 +157,23 @@ class Event extends EntityRepository
     {
         return $this->userId;
     }
+
+    /**
+     * @return User
+     */
+    public function getAddUser()
+    {
+        return $this->addUser;
+    }
+
+    /**
+     * @param User $addUser
+     */
+    public function setAddUser($addUser)
+    {
+        $this->addUser = $addUser;
+    }
+
 
     /**
      * Set addedOn
@@ -163,5 +222,26 @@ class Event extends EntityRepository
     {
         return $this->eventOn;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getEventComments()
+    {
+        return $this->eventComments;
+    }
+
+    /**
+     * @param ArrayCollection $eventComment
+     *
+     * @return Event
+     */
+    public function setEventComment($eventComment)
+    {
+        $this->eventComments[] = $eventComment;
+        return $this;
+    }
+
+
 }
 
