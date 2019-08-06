@@ -29,7 +29,8 @@ class DestinationService implements DestinationServerInterface
     public function save(Destination $destination): bool
     {
         /** @var Region $regionEntity */
-        $regionEntity = $this->regionRepository->find( $destination->getRegion() );
+        $regionEntity = $this->regionRepository->find( $destination->getRegionId() );
+
         $destination
             ->setCountSeen(0)
             ->setCountVisited(0)
@@ -43,6 +44,7 @@ class DestinationService implements DestinationServerInterface
 
     public function update(Destination $destination): bool
     {
+
         return $this->destinationRepository->update( $destination);
     }
 

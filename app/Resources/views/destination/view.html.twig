@@ -5,6 +5,32 @@
 {% endblock %}
 
 {% block main %}
+    <h2>Destination Title: {{ destination.name }}</h2>
+    <hr />
+    <img src="{{ asset('uploads/images/destination/') ~ destination.image }}" width="400" alt="" />
+    <br />
+    Description:<br />
+    <div>{{ destination.description }}</div>
+    <hr />
+    <small>Author:</small><br />
+    <img src=" {{ asset('uploads/images/destination/') ~ destination.addedUser.image }}" width="50" alt="NoAvatar">
+    <br />
+    <small>{{ destination.addedUser.fullName }}</small>
+    <small>Added Date: {{ destination.addedOn|date("F jS \\a\\t g:ia") }}</small>
+    <hr />
+    <small>Statistics:
+        <ul>
+            <li>        View: {{ destination.countSeen }}</li>
+            <li>        View: {{ destination.countLiked }}</li>
+            <li>        View: {{ destination.countVisited }}</li>
+        </ul>
+
+    </small>
+
+    <hr />
+    <a href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
+    <a href="{{ path('destination_delete' ,{id:destination.id} ) }}" >Delete</a>
+
 
 {% endblock %}
 

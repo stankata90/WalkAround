@@ -5,6 +5,88 @@
 {% endblock %}
 
 {% block main %}
+    <h1>Edit Destination: {{ destination.name }}</h1>
 
+
+    <div class="container body-content span=8 offset=2 mt-5">
+        <div class="well">
+            <form enctype="multipart/form-data" class="form-horizontal offset-4"  method="post">
+                <fieldset c>
+                    <legend>Form</legend>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_name">Name Destination</label>
+                        <div class="col-sm-12 ">
+                            <input class="form-control" id="destination_name" placeholder="Edit Destination" name="destination[name]" value="{{ destination.name }}"required type="text">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_description">Description</label>
+                        <div class="col-sm-12 ">
+                            <textarea class="form-control" rows="10" id="destination_description" placeholder="Description" name="destination[description]" required>{{ destination.description }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_image">Image Cover</label>
+                        <div class="col-sm-12 ">
+                            <input type="file" class="form-control" id="destination_image" placeholder="upload image" name="destination[image]" >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_region">Region</label>
+                        <div class="col-sm-12 ">
+                            <select name="destination[regionid]" id="destination_region" class="form-control" required>
+                                <option value="0" ></option>
+                                {% for region in regions %}
+                                    <option value="{{ region.id  }}"  {% if destination.regionId == region.id %} selected="selected"{% endif %}  >{{ region.name  }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12 col-sm-offset-4 mr-auto">
+                            <a class="btn btn-default" href="{{ path('homepage') }}">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Edit "{{ destination.name }}"</button>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+                                Launch demo modal
+                            </button>
+                        </div>
+                    </div>
+
+                    {{  form_row(form._token) }}
+                </fieldset>
+            </form>
+
+
+            <!-- Modal -->
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <form id="form1" action="{{ path('destination_delete_process', {id:destination.id}) }}" method="get" >
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">You really want to delete destination:<br/> {{ destination.name }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img class='mr-auto pd-auto' src="{{ asset('uploads/images/destination/') ~ destination.image }}" width="400" alt="" />
+                                <small>{{ destination.description }}</small>
+                            </div>
+                                <div class="modal-footer">
+                                    <button type="button"  class="btn btn-secondary" data-dismiss="modal">NO</button>
+                                    <button type="submit" form="form1" class="btn btn-danger">YES DELETE!</button>
+                                </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
 {% endblock %}
-

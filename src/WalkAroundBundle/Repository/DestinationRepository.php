@@ -43,7 +43,7 @@ class DestinationRepository extends EntityRepository
      */
     public function update( Destination $destination) {
         try{
-            $this->_em->merge( $destination );
+            $this->_em->persist( $destination );
             $this->_em->flush();
             return true;
         } catch (OptimisticLockException $e) {

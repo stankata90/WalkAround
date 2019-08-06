@@ -508,7 +508,7 @@ class Destination
      * @param Region $region
      * @return Destination
      */
-    public function setRegion($region)
+    public function setRegion(Region $region)
     {
         $this->region = $region;
         return $this;

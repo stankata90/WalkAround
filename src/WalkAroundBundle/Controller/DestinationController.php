@@ -48,6 +48,8 @@ class DestinationController extends Controller
         );
     }
 
+
+
     /**
      * @Route("destination/create", name="destination_create_process", methods={"POST"})
      * @param Request $request
@@ -93,9 +95,75 @@ class DestinationController extends Controller
         return $this->render(
             'destination/edit.html.twig',
             [
-                'form' => $this->createForm( DestinationEditType::class )->createView()
+                'form' => $this->createForm( DestinationEditType::class )->createView( ),
+                'destination' => $this->getDoctrine()->getRepository( Destination::class)->find( $id),
+                'regions' =>$this->regionService->getAll()
             ]
         );
+    }
+
+    /**
+     * @Route("/destination/{id}/edit", name="destination_edit_process", methods={"POST"})
+     *
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function editProcess( Request $request, int $id) {
+
+
+        /** @var Destination $destinationEntity*/
+        $destinationEntity = $this->getDoctrine()->getRepository(Destination::class)->find( $id );
+        $form = $this->createForm( DestinationEditType::class, $destinationEntity);
+        $form->handleRequest(  $request );
+
+        try{
+            /** @var UploadedFile $image */
+            $image = $form['image']->getData();
+            if(  $image AND !$image->getError() ) {
+               $fileName = md5( uniqid() ) . ".". $image->guessExtension();
+               $image->move(
+                   $this->getParameter( 'destination_directory'),
+                   $fileName
+               );
+
+               $destinationEntity->setImage( $fileName );
+           }
+
+            $this->destinationService->update( $destinationEntity );
+            return  $this->redirectToRoute( 'destination_view',  ['id' => $id] );
+
+        } catch ( \Exception $e ) {
+
+            return  $this->redirectToRoute( 'destination_edit',  ['id' => $id]  );
+        }
+
+    }
+
+    /**
+     * @Route( "destination/{id}/delete", name="destination_delete",methods={"GET"})
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function deleteAction( int $id) {
+        $destinationEntity = $this->destinationService->findOneById( $id );
+
+        $this->destinationService->remove( $destinationEntity );
+        return $this->redirectToRoute('destination_all');
+
+    }
+
+    /**
+     * @Route( "destination/{id}/delete", name="destination_delete_process",methods={"GET"})
+     *
+     * @param int $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function deleteProcess( int $id ) {
+
+
     }
     /**
      * @Route("destination/{id}/view", name="destination_view", methods={"GET"})
@@ -103,8 +171,6 @@ class DestinationController extends Controller
      */
     public function viewAction(int $id ) {
 
-//        var_dump( $id);
-//        exit();
         $destinationEntity = $this->destinationService->findOneById( $id );
         return $this->render( 'destination/view.html.twig', ['destination' => $destinationEntity] );
     }

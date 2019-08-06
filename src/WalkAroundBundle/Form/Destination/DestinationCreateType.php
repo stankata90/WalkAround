@@ -26,7 +26,11 @@ class DestinationCreateType extends AbstractType
                 [
 
                 ])
-            ->add('region', NumberType::class);
+            ->add('regionid', NumberType::class,
+                [
+                    'data_class' =>null
+                ]
+                );
     }
 
     public function configureOptions(OptionsResolver $resolver)

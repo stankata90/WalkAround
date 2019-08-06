@@ -4,6 +4,7 @@ namespace WalkAroundBundle\Form\Destination;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,7 +20,11 @@ class DestinationEditType extends AbstractType
             ->add('description', TextareaType::class)
             ->add('image', FileType::class,
                 [
-
+                    'data_class' => null
+                ])
+            ->add('regionid', NumberType::class,
+                [
+                    'data_class' => null
                 ]);
     }
 
