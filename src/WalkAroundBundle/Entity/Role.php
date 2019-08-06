@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="role")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\RoleRepository")
  */
-class Role extends EntityRepository
+class Role
 {
     /**
      * @var int
@@ -37,15 +37,8 @@ class Role extends EntityRepository
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="roles")
      */
-
     private $users;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
-    {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
-        $this->users = new ArrayCollection();
-    }
 
     /**
      * Get id
@@ -98,6 +91,14 @@ class Role extends EntityRepository
         $this->users[] = $user;
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getRole(){
+        return $this->getName();
+    }
+
 
 
 

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{%  block title %}
+    All Destination
+{% endblock %}
+
+{% block main %}
+    <a href="{{ path('destination_create')  }}" >New Destination</a>
+
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                {% for destination in destinations %}
+                        <div class="col-md-4">
+                            <div class="card mb-4 box-shadow">
+                                <a href="{{ path('destination_view', {id:destination.id} ) }}">
+                                    <img class="card-img-top" src="{{ asset('uploads/images/destination/') ~ destination.image }}" alt="Card image cap">
+                                </a>
+
+                                <div class="card-body">
+                                    <h5>Title: <a href="{{ path('destination_view', {id:destination.id} ) }}">{{ destination.name }}</a></h5><br/>
+                                    <small class="card-text">Region: {{ destination.region.name }}</small><br/>
+                                    <small class="text-muted">addedOn: {{ destination.addedOn|date("F jS \\a\\t g:ia") }}</small>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <a href="{{ path('destination_view', {id:destination.id} ) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                                            <a href="{{ path('destination_edit', {id:destination.id} ) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

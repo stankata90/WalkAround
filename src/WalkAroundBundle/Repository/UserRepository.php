@@ -1,7 +1,6 @@
 <?php
 
-namespace SoftUniBlogBundle\Repository;
-
+namespace WalkAroundBundle\Repository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping;

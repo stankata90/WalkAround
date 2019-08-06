@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="event_comment")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\EventCommentRepository")
  */
-class EventComment extends EntityRepository
+class EventComment
 {
     /**
      * @var int
@@ -89,10 +89,8 @@ class EventComment extends EntityRepository
      */
     private $addedOn;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    public function __construct( )
     {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
         $this->reComments = new ArrayCollection();
     }

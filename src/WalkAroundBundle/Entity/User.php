@@ -2,11 +2,10 @@
 
 namespace WalkAroundBundle\Entity;
 
+//use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
@@ -14,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="\WalkAroundBundle\Repository\UserRepository")
  */
-class User extends EntityRepository
+class User implements UserInterface
 {
     /**
      * @var int
@@ -40,8 +39,6 @@ class User extends EntityRepository
     private $password;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="fullName", type="string", length=255)
      */
     private $fullName;
@@ -63,7 +60,7 @@ class User extends EntityRepository
     /**
      * @var string
      *
-     * @ORM\Column(name="image", type="string", length=255)
+     * @ORM\Column(name="image", type="string", length=255, nullable=true)
      */
     private $image;
 
@@ -144,10 +141,8 @@ class User extends EntityRepository
     private $roles;
 
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    public function __construct( )
     {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
         $this->addDestinations = new ArrayCollection();
         $this->approvedDestinations = new ArrayCollection();
@@ -246,11 +241,15 @@ class User extends EntityRepository
      * Set age
      *
      * @param integer $age
-     *
+     * @throws \Exception
      * @return User
      */
     public function setAge($age)
     {
+
+        if( !is_integer( intval($age )) ) {
+            throw new \Exception( 'eror age max ');
+        }
         $this->age = $age;
 
         return $this;
@@ -502,23 +501,72 @@ class User extends EntityRepository
     }
 
     /**
-     * @return ArrayCollection
+     * @return array (Role|string)[] The user roles
      */
     public function getRoles()
     {
-        return $this->roles;
+        $stringRoles = [];
+
+        foreach ( $this->roles as $role ) {
+            /** @var Role $role */
+            $stringRoles[] =  $role->getRole();
+        }
+        return $stringRoles;
     }
 
     /**
      * @param ArrayCollection $role
+     * @return User
      */
     public function setRole($role)
     {
-        $this->roles = $role;
+        $this->roles[] = $role;
+        return $this;
+    }
+
+    /**
+     * @param Role $role
+     * @return User
+     */
+    public function addRole( Role $role )
+    {
+        $this->roles[] = $role;
+
+        return $this;
     }
 
 
+    /**
+     * Returns the salt that was originally used to encode the password.
+     *
+     * This can return null if the password was not encoded using a salt.
+     *
+     * @return string|null The salt
+     */
+    public function getSalt()
+    {
+        return false;
+    }
 
+    /**
+     * Returns the username used to authenticate the user.
+     *
+     * @return string The username
+     */
+    public function getUsername()
+    {
+        return $this->getFullName();
+    }
 
+    /**
+     * Removes sensitive data from the user.
+     *
+     * This is important if, at any given point, sensitive information like
+     * the plain-text password is stored on this object.
+     */
+    public function eraseCredentials()
+    {
+        return false;
+    }
 }
 

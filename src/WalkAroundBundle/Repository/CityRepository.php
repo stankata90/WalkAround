@@ -5,7 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use WalkAroundBundle\Entity\User;
+use WalkAroundBundle\Entity\City;
 
 /**
  * CityRepository
@@ -18,6 +18,6 @@ class CityRepository extends EntityRepository
     public function __construct( EntityManagerInterface $em, Mapping\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new Mapping\ClassMetadata( User::class ) : $class );
+        parent::__construct($em, $class == null ? new Mapping\ClassMetadata( City::class ) : $class );
     }
 }

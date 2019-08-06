@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="event_user")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\EventUserRepository")
  */
-class EventUser extends EntityRepository
+class EventUser
 {
     /**
      * @var int
@@ -63,11 +63,7 @@ class EventUser extends EntityRepository
      */
     private $accepted;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
-    {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
-    }
+
 
     /**
      * Get id

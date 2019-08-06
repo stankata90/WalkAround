@@ -7,8 +7,12 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    destination_directory: '%kernel.project_dir%/web/uploads/images/destination'
+    user_directory: '%kernel.project_dir%/web/uploads/images/user'
 
 framework:
+    profiler:
+        collect: false
     #esi: ~
     #translator: { fallbacks: ['%locale%'] }
     secret: '%secret%'

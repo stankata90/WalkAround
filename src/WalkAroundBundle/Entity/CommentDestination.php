@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="comment_destination")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\CommentDestinationRepository")
  */
-class CommentDestination extends EntityRepository
+class CommentDestination
 {
     /**
      * @var int
@@ -97,10 +97,8 @@ class CommentDestination extends EntityRepository
      */
     private $likes;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    public function __construct( )
     {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();

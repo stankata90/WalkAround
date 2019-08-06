@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="destination_liked")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\DestinationLikedRepository")
  */
-class DestinationLiked extends EntityRepository
+class DestinationLiked
 {
     /**
      * @var int
@@ -62,11 +62,6 @@ class DestinationLiked extends EntityRepository
      */
     private $likedUser;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
-    {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
-    }
 
     /**
      * Get id

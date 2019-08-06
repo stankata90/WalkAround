@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="event")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\EventRepository")
  */
-class Event extends EntityRepository
+class Event
 {
     /**
      * @var int
@@ -81,11 +81,9 @@ class Event extends EntityRepository
      */
     private $eventUsers;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    public function __construct( )
     {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
-        $this->eventComments = new ArrayCollection();
+         $this->eventComments = new ArrayCollection();
     }
 
     /**

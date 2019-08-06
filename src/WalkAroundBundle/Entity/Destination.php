@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Destination
@@ -14,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="destination")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\DestinationRepository")
  */
-class Destination extends EntityRepository
+class Destination
 {
     /**
      * @var int
@@ -32,12 +33,6 @@ class Destination extends EntityRepository
      */
     private $name;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="free", type="string", length=255)
-     */
-    private $free;
 
     /**
      * @var string
@@ -93,14 +88,14 @@ class Destination extends EntityRepository
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="approvedOn", type="datetime")
+     * @ORM\Column(name="approvedOn", type="datetime", nullable=true)
      */
     private $approvedOn;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="approvedBy", type="integer")
+     * @ORM\Column(name="approvedBy", type="integer", nullable=true)
      */
     private $approvedBy;
 
@@ -165,10 +160,8 @@ class Destination extends EntityRepository
      */
     private $citiesTags;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    public function __construct()
     {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
 
         $this->commentsUsers = new ArrayCollection();
         $this->likesUsers = new ArrayCollection();
@@ -210,29 +203,6 @@ class Destination extends EntityRepository
         return $this->name;
     }
 
-    /**
-     * Set free
-     *
-     * @param string $free
-     *
-     * @return Destination
-     */
-    public function setFree($free)
-    {
-        $this->free = $free;
-
-        return $this;
-    }
-
-    /**
-     * Get free
-     *
-     * @return string
-     */
-    public function getFree()
-    {
-        return $this->free;
-    }
 
     /**
      * Set description
@@ -483,11 +453,13 @@ class Destination extends EntityRepository
     }
 
     /**
-     * @param User $addedUser
+     * @param User|UserInterface $addedUser
+     * @return Destination
      */
     public function setAddedUser($addedUser)
     {
         $this->addedUser = $addedUser;
+        return $this;
     }
 
     /**

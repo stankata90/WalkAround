@@ -6,7 +6,8 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use WalkAroundBundle\Entity\User;
+use Doctrine\ORM\OptimisticLockException;
+use WalkAroundBundle\Entity\Destination;
 
 /**
  * DestinationRepository
@@ -19,6 +20,50 @@ class DestinationRepository extends EntityRepository
     public function __construct( EntityManagerInterface $em, Mapping\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new Mapping\ClassMetadata( User::class ) : $class );
+        parent::__construct($em, $class == null ? new Mapping\ClassMetadata( Destination::class ) : $class );
     }
+
+    /**
+     * @param Destination $destination
+     * @return bool
+     */
+    public function insert( Destination $destination) :bool {
+        try{
+            $this->_em->persist( $destination );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Destination $destination
+     * @return bool
+     */
+    public function update( Destination $destination) {
+        try{
+            $this->_em->merge( $destination );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Destination $destination
+     * @return bool
+     */
+    public function delete(Destination $destination)
+    {
+        try{
+            $this->_em->remove( $destination );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
 }

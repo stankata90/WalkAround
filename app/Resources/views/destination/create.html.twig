@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    New Destination
+{% endblock %}
+
+{% block main %}
+    <h1>New Destination</h1>
+
+
+    <div class="container body-content span=8 offset=2 mt-5">
+        <div class="well">
+            <form enctype="multipart/form-data" class="form-horizontal offset-4"  method="post">
+                <fieldset c>
+                    <legend>Form</legend>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_name">Name Destination</label>
+                        <div class="col-sm-12 ">
+                            <input class="form-control" id="destination_name" placeholder="Name Destination" name="destination[name]" required type="text">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_description">Description</label>
+                        <div class="col-sm-12 ">
+                            <textarea class="form-control" rows="10" id="destination_description" placeholder="Description" name="destination[description]" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_image">Image Cover</label>
+                        <div class="col-sm-12 ">
+                            <input type="file" class="form-control" id="destination_image" placeholder="upload image" name="destination[image]" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-12 control-label" for="destination_region">Region</label>
+                        <div class="col-sm-12 ">
+                            <select name="destination[region]" id="destination_region" class="form-control" required>
+                                <option value="0" ></option>
+                                {% for region in regions %}
+                                    <option value=" {{ region.id  }}">{{ region.name  }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12 col-sm-offset-4 mr-auto">
+                            <a class="btn btn-default" href="{{ path('homepage') }}">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Add Destination</button>
+                        </div>
+                    </div>
+
+                    {{  form_row(form._token) }}
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

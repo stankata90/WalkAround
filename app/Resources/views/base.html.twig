@@ -1,13 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
     <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>{% block title %}{% endblock %}: WalkAround</title>
+
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+
+        {% block stylesheets %}
+
+        {% endblock %}
+
     </head>
+
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <div class="container body-container">
+
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="{{ path('homepage') }}">WalkAround</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ path('destination_all') }}">Destination <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav navbar-right">
+                        {% if app.user %}
+                            <li>
+                                <a class=" nav-link"  href="{{ path('user_profile') }}">
+                                    My Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class=" nav-link" href="{{ path('user_logout') }}">
+                                    Logout
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a class="nav-link" href="{{ path('user_register') }}">
+                                    Register
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link" href="{{ path('user_login') }}">
+                                    Login
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+
+            {% for message in app.flashes('error') %}
+                <div class="container body-content span=8 offset=2">
+                    <div class="well">
+                        <br />
+                        <div class="alert alert-danger" role="alert" class="fade" >
+
+                            {{ message }}
+                            <button type="button" class="close " data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="row">
+                <div id="main" class="col-sm-12 mt-4">
+                    {% block main %}
+
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{{ asset('js/jquery-3.3.1.slim.min.js') }}" ></script>
+        <script src="{{ asset('js/ajax/libs/popper.js/1.14.7/umd/popper.min.js')  }}" ></script>
+        <script src="{{ asset('js/bootstrap/4.3.1/js/bootstrap.min.js') }}" ></script>
     </body>
 </html>

@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="region")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\RegionRepository")
  */
-class Region extends EntityRepository
+class Region
 {
     /**
      * @var int
@@ -39,11 +39,8 @@ class Region extends EntityRepository
      */
     private $destinations;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
+    public function __construct( )
     {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
-
         $this->destinations = new ArrayCollection();
 
     }

@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="friend")
  * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\FriendRepository")
  */
-class Friend extends EntityRepository
+class Friend
 {
     /**
      * @var int
@@ -61,11 +61,7 @@ class Friend extends EntityRepository
      */
     private $addedOn;
 
-    public function __construct( EntityManagerInterface $em, ORM\ClassMetadata $class = null )
-    {
-        /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new ORM\ClassMetadata( User::class ) : $class );
-    }
+
 
     /**
      * Get id
