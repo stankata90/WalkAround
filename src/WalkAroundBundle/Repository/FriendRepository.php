@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\Friend;
 
 /**
@@ -20,5 +21,48 @@ class FriendRepository extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( Friend::class ) : $class );
+    }
+
+    /**
+     * @param Friend $friend
+     * @return bool
+     */
+    public function insert( Friend $friend) :bool {
+        try{
+            $this->_em->persist( $friend );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Friend $friend
+     * @return bool
+     */
+    public function update( Friend $friend) {
+        try{
+            $this->_em->persist( $friend );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Friend $friend
+     * @return bool
+     */
+    public function delete(Friend $friend)
+    {
+        try{
+            $this->_em->remove( $friend );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
     }
 }

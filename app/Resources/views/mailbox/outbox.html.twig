@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Mail OutBox
+{% endblock %}
+{% block main %}
+    <div class="container">
+        <div class="row mx-3 my-3">
+            <h3 class="">Mail OutBox</h3>
+            <hr />
+            <a class="nav-link" href="{{ path('mailbox_inbox') }}">InBox Mail</a>
+            <a class="nav-link" href="{{ path('mailbox_outbox') }}">OutBox Mail</a>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="container">
+        <div class="row mx-3 my-3">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">For</th>
+                    <th scope="col">About</th>
+                    <th scope="col">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set count = 1 %}
+                {% for mail in messages %}
+                    <tr>
+                        <th scope="row">{{ count }}</th>
+                        <td>{{ mail.addedOn|date("F jS \\a\\t g:ia") }}</td>
+                        <td><a href="{{ path('user_profile', {id:mail.forUser.id}) }}">{{ mail.forUser.fullName }}</a></td>
+                        <td><a href="{{ path('mailbox_view', {id:mail.id}) }}">{{ mail.about }}</a></td>
+                        <td>{% if mail.seenOn == null %} Not Seen{% else %}Seen{% endif %}</td>
+                    </tr>
+                    {% set count =count+1 %}
+                {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -3,9 +3,7 @@
 namespace WalkAroundBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -139,6 +137,12 @@ class Destination
 
     /**
      * @var ArrayCollection
+     * @ORM\OneToMany( targetEntity="CommentDestination", mappedBy="destination")
+     */
+    private $comments;
+
+    /**
+     * @var ArrayCollection
      *
      * @ORM\OneToMany( targetEntity="DestinationLiked", mappedBy="likedDestination")
      */
@@ -164,6 +168,7 @@ class Destination
     {
 
         $this->commentsUsers = new ArrayCollection();
+        $this->comments = new ArrayCollection();
         $this->likesUsers = new ArrayCollection();
         $this->eventsDestinations = new ArrayCollection();
         $this->citiesTags = new ArrayCollection();
@@ -531,6 +536,26 @@ class Destination
         $this->likesUsers[] = $likeUser;
         return $this;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param ArrayCollection $comment
+     *
+     * @return Destination
+     */
+    public function setComments($comment)
+    {
+        $this->comments[] = $comment;
+        return $this;
+    }
+
 
     /**
      * @return ArrayCollection

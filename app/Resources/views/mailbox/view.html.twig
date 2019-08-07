@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+    <div class="container">
+        <div class="row mx-3 my-3">
+            <h3 class="">Mail View</h3>
+            <hr />
+            {%  if message.fromUser.id != app.user.id %}
+            <a class="nav-link" href="{{ path('mailbox_delete_process', {id:message.id}) }}">Delete Mail</a>
+            {% endif %}
+            <a class="nav-link" href="{{ path('mailbox_inbox') }}">InBox Mail</a>
+            <a class="nav-link" href="{{ path('mailbox_outbox') }}">OutBox Mail</a>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="container">
+        <div class="row mx-3 my-3">
+            <div class="col-10 container body-content span=1 offset=3 mt-5">
+                <div class="well">
+                    <h4>About: {{ message.about }}</h4>
+                </div>
+                <hr />
+                <div class="well">
+                    {{ message.content }}
+                </div>
+                <hr />
+
+                <div class="well">
+                    <h4>From:</h4>
+                    <a href="{{ path('user_profile', {id:message.fromUser.id}) }}" >
+
+                    <img src="{{ asset('uploads/images/user/' ~ message.fromUser.image ) }}" width="100" height="100" alt="avatar" style="border-radius: 50%;" /> {{ message.fromUser.fullName }}
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

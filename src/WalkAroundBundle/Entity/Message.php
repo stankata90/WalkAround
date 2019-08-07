@@ -2,9 +2,6 @@
 
 namespace WalkAroundBundle\Entity;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -57,14 +54,14 @@ class Message
     /**
      * @var int
      *
-     * @ORM\Column(name="seen", type="integer")
+     * @ORM\Column(name="seen", type="integer", nullable=true)
      */
     private $seen;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="seenOn", type="datetime")
+     * @ORM\Column(name="seenOn", type="datetime", nullable=true)
      */
     private $seenOn;
 

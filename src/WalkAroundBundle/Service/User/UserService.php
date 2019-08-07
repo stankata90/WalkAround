@@ -2,6 +2,7 @@
 
 
 namespace WalkAroundBundle\Service\User;
+use DateTime;
 use WalkAroundBundle\Entity\Role;
 use WalkAroundBundle\Service\Encryption\ArgonEncryptionService;
 use Symfony\Component\Security\Core\Security;
@@ -37,10 +38,10 @@ class UserService implements UserServiceInterface
         $userRole = $this->roleService->findOneByName( 'USER' );
         $user->addRole( $userRole );
 
-        $user->setAddedOn( new \DateTime('now'));
+        $user->setAddedOn( new DateTime('now'));
 
         return $this->userRepository->insert( $user );
-        // TODO: Implement save() method.
+
     }
 
     /**
@@ -49,7 +50,7 @@ class UserService implements UserServiceInterface
      * @return bool|void
      */
     public function updateProfile( ?string $currentPassword, User $newUser ) : bool {
-        $new = $newUser->getPassword();
+
         if( $newUser->getPassword() !== Null  && $newUser->getPassword() !== $currentPassword && !$this->encryption->verify($newUser->getPassword(), $currentPassword) ) {
             $newUser->setPassword( $this->encryption->hash( $newUser->getPassword() ) );
         } else {
@@ -59,28 +60,13 @@ class UserService implements UserServiceInterface
         return $this->userRepository->update( $newUser );
     }
 
-    public function findOneByEmail(string $email): ?User
-    {
-        // TODO: Implement findOneByEmail() method.
-    }
-
     /**
      * @param int $id
      * @return User|null|object
      */
-    public function findOneById(int $id): ?User
+    public function findOneById(int $id): ?object
     {
         return  $this->userRepository->findOneBy( ['id' => $id ]);
-    }
-
-    public function findOne(User $user): ?User
-    {
-        // TODO: Implement findOne() method.
-    }
-
-    public function currentUser(): ?User
-    {
-        // TODO: Implement currentUser() method.
     }
 
     /**

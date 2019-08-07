@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\Message;
 
 /**
@@ -19,5 +20,48 @@ class MessageRepository extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( Message::class ) : $class );
+    }
+
+    /**
+     * @param Message $message
+     * @return bool
+     */
+    public function insert( Message $message) :bool {
+        try{
+            $this->_em->persist( $message );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Message $message
+     * @return bool
+     */
+    public function update( Message $message) {
+        try{
+            $this->_em->persist( $message );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Message $message
+     * @return bool
+     */
+    public function delete(Message $message)
+    {
+        try{
+            $this->_em->remove( $message );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
     }
 }
