@@ -23,8 +23,9 @@
                                     <small class="text-muted">addedOn: {{ destination.addedOn|date("F jS \\a\\t g:ia") }}</small>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="btn-group">
-                                            <a href="{{ path('destination_view', {id:destination.id} ) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                                            <a href="{{ path('destination_edit', {id:destination.id} ) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                            <a href="{{ path('destination_view', {id:destination.id} ) }}" class="btn btn-sm btn-outline-secondary">Seen <span class="badge badge-primary badge-pill">{{ destination.countSeen }}</span></a>
+                                            <a href="{{ path('destination_view', {id:destination.id} ) }}" class="btn btn-sm btn-outline-secondary">Like <span class="badge badge-primary badge-pill">{{ destination.countLiked }}</a>
+                                            <a href="{{ path('destination_view', {id:destination.id} ) }}" class="btn btn-sm btn-outline-secondary">Visited <span class="badge badge-primary badge-pill">{{ destination.countVisited }}</a>
                                         </div>
                                     </div>
                                 </div>

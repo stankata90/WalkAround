@@ -35,4 +35,18 @@ class UserRepository extends EntityRepository
             return false;
         }
     }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function update( User $user ) {
+        try {
+            $this->_em->merge( $user );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
 }

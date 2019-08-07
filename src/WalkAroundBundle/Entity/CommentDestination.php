@@ -71,7 +71,7 @@ class CommentDestination
     /**
      * @var int
      *
-     * @ORM\Column(name="idCommentRe", type="integer")
+     * @ORM\Column(name="idCommentRe", type="integer", nullable=true)
      */
     private $idCommentRe;
 

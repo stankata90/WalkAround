@@ -51,7 +51,7 @@
                             <button type="submit" class="btn btn-primary">Edit "{{ destination.name }}"</button>
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
-                                Launch demo modal
+                                DELETE
                             </button>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
             <!-- Modal -->
 
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <form id="form1" action="{{ path('destination_delete_process', {id:destination.id}) }}" method="get" >
+                <form id="form1" action="{{ path('destination_delete', {id:destination.id}) }}" method="POST" >
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">

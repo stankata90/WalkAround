@@ -13,7 +13,7 @@
     <div>{{ destination.description }}</div>
     <hr />
     <small>Author:</small><br />
-    <img src=" {{ asset('uploads/images/destination/') ~ destination.addedUser.image }}" width="50" alt="NoAvatar">
+    <img style="border-radius: 50%;" src=" {{ asset('uploads/images/user/') ~ destination.addedUser.image }}" width="50" height="50" alt="NoAvatar">
     <br />
     <small>{{ destination.addedUser.fullName }}</small>
     <small>Added Date: {{ destination.addedOn|date("F jS \\a\\t g:ia") }}</small>
@@ -21,15 +21,82 @@
     <small>Statistics:
         <ul>
             <li>        View: {{ destination.countSeen }}</li>
-            <li>        View: {{ destination.countLiked }}</li>
-            <li>        View: {{ destination.countVisited }}</li>
+            <li>        Likes: {{ destination.countLiked }}</li>
+            <li>        Visited: {{ destination.countVisited }}</li>
         </ul>
 
     </small>
 
+
+
+    {% if comments|length > 0 %}
+        <div class="container ">
+            {% for comment in comments %}
+                <div class="row border-top p-2">
+
+                    <div class="col-md-1 ">
+                        <a href="">
+                            <img style=" border-radius: 50%;" src="{{ asset('uploads/images/user/') ~ comment.addedUser.image }}" width="50" height="50" alt="" title="Comment by: {{ comment.addedUser.fullName }}"/>
+
+                        </a>
+                    </div>
+
+                    <div class="col-md-11 ">
+                        {{ comment.content }}
+                    </div>
+
+                    <div class="col-md-12">
+                        <a href="">Like</a> | <a href="">Comment</a>
+                    </div>
+
+                </div>
+                    {% endfor %}
+            </div>
+
+        {% endif %}
+
     <hr />
-    <a href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
-    <a href="{{ path('destination_delete' ,{id:destination.id} ) }}" >Delete</a>
+    {% if app.user and app.user.id == destination.addedBy %}
+        <a href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
+    {% endif %}
+    {% if app.user %}
+        {% if destinationLiked|length == 0 or destinationLiked[0].destinationId != destination.id and destinationLiked[0].userId != app.user.id %}
+             <a href="{{ path('destination_like' ,{id:destination.id} ) }}" >Like</a>
+        {% else %}
+            <a href="{{ path('destination_unlike' ,{id:destination.id} ) }}" >Un Like</a>
+        {% endif %}
+    {% endif %}
+
+    <!-- Button trigger modal -->
+    {% if app.user %}
+        <a href=""form="commentForm" data-toggle="modal" data-target="#exampleModal">
+             Add Comment
+        </a>
+    {% endif %}
+
+    <!-- Modal -->
+    <form name="commentForm" action="{{ path('destination_comment_new', {id:destination.id}) }}" id="commentForm" method="POST">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"> New comment for "{{ destination.name }}" destination </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea name="comment[content]" class="form-control"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Send Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{ form_row(formComment._token) }}
+    </form>
 
 
 {% endblock %}

@@ -5,7 +5,9 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\CommentDestination;
+use WalkAroundBundle\Entity\Destination;
 
 /**
  * CommentDestinationRepository
@@ -20,4 +22,48 @@ class CommentDestinationRepository extends EntityRepository
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( CommentDestination::class ) : $class );
     }
+
+    public function insert( CommentDestination $commentDestination ) {
+        try{
+            $this->_em->persist( $commentDestination );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function update( CommentDestination $commentDestination ) {
+
+        try{
+            $this->_em->merge( $commentDestination );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function delete( CommentDestination $commentDestination ) {
+        try{
+            $this->_em->remove( $commentDestination );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Destination $destination
+     * @return CommentDestination[]
+     */
+    public function findOneByDestination( Destination $destination) {
+        $query = $this->createQueryBuilder('c')
+            ->where('c.destinationId = :id')
+            ->setParameter('id', $destination->getId())
+            ->getQuery();
+
+        $products = $query->getResult();
+        return $products;
+    }
+
 }

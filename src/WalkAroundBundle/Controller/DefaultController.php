@@ -2,20 +2,24 @@
 
 namespace WalkAroundBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use WalkAroundBundle\Service\Destination\DestinationServerInterface;
 
 class DefaultController extends Controller
 {
+    private $destinationService;
+    function __construct( DestinationServerInterface $destination )
+    {
+        $this->destinationService = $destination;
+    }
+
     /**
      * @Route("/", name="homepage")
      */
     public function indexAction(Request $request)
     {
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
+        return $this->render('destination/all.html.twig', array('destinations' => $this->destinationService->findAll() ));
     }
 }

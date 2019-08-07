@@ -5,7 +5,10 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use WalkAroundBundle\Entity\Destination;
 use WalkAroundBundle\Entity\DestinationLiked;
+use WalkAroundBundle\Entity\User;
 
 /**
  * DestinationLikedRepository
@@ -19,5 +22,46 @@ class DestinationLikedRepository extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( DestinationLiked::class ) : $class );
+    }
+
+    public function insertLike( DestinationLiked $destinationLiked ) {
+
+        try{
+            $this->_em->persist( $destinationLiked );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+
+    }
+
+    public function deleteLike( DestinationLiked $destinationLiked ){
+        try{
+            $this->_em->remove( $destinationLiked );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Destination $destination
+     * @param User $user
+     * @return DestinationLiked[]
+     */
+    public function findOne(Destination $destination, User $user ) {
+
+        $query = $this->createQueryBuilder('destination_liked')
+            ->where('destination_liked.userId = :uid')
+            ->andWhere('destination_liked.destinationId = :did')
+            ->setParameter('did', $destination->getId())
+            ->setParameter('uid', $user->getId())
+            ->getQuery();
+
+        $products = $query->getResult();
+
+       return $products;
     }
 }

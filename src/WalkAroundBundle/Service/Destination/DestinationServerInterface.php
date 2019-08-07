@@ -1,7 +1,7 @@
 <?php
 
 
-namespace WalkAroundBundle\Service\Destianion;
+namespace WalkAroundBundle\Service\Destination;
 
 
 use WalkAroundBundle\Entity\Destination;
@@ -14,4 +14,6 @@ interface DestinationServerInterface
     public function findOne( Destination $destination) :?Destination;
     public function findOneById( int $id ) :?Destination;
     public function findAll();
+    public function addSeenCount( Destination $destination);
+    public function viewDependence( Destination $destination );
 }
