@@ -4,19 +4,22 @@
     Edit
 {% endblock %}
 
+{% block page_title %}Edit Destination: {{ destination.name }}{% endblock %}
+
+{% block page_button %}
+    <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_create')  }}" >New Destination</a>
+{% endblock %}
+
 {% block main %}
-    <h1>Edit Destination: {{ destination.name }}</h1>
 
-
-    <div class="container body-content span=8 offset=2 mt-5">
+    <div class="container body-content col-6 offset-3 mt-5">
         <div class="well">
-            <form enctype="multipart/form-data" class="form-horizontal offset-4"  method="post">
-                <fieldset c>
-                    <legend>Form</legend>
+            <form enctype="multipart/form-data" class="form-horizontal"  method="post">
+
                     <div class="form-group">
                         <label class="col-sm-12 control-label" for="destination_name">Name Destination</label>
-                        <div class="col-sm-12 ">
-                            <input class="form-control" id="destination_name" placeholder="Edit Destination" name="destination[name]" value="{{ destination.name }}"required type="text">
+                        <div class="col-sm-12" >
+                            <input class="form-control" id="destination_name" placeholder="Edit Destination" name="destination[name]" value="{{ destination.name }}" required type="text">
                         </div>
                     </div>
                     <div class="form-group">
@@ -57,7 +60,7 @@
                     </div>
 
                     {{  form_row(form._token) }}
-                </fieldset>
+
             </form>
 
 

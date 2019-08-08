@@ -5,6 +5,7 @@ namespace WalkAroundBundle\Entity;
 //use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -140,6 +141,11 @@ class User implements UserInterface
      */
     private $roles;
 
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="Friend", mappedBy="friendUser")
+     */
+    private $friends;
 
     public function __construct( )
     {
@@ -153,6 +159,7 @@ class User implements UserInterface
         $this->sendMessages = new ArrayCollection();
         $this->receivedMessages = new ArrayCollection();
         $this->roles = new ArrayCollection();
+        $this->friends = new ArrayCollection();
     }
 
     /**
@@ -248,7 +255,7 @@ class User implements UserInterface
     {
 
         if( !is_integer( intval($age )) ) {
-            throw new \Exception( 'eror age max ');
+            throw new Exception( 'eror age max ');
         }
         $this->age = $age;
 
@@ -568,5 +575,25 @@ class User implements UserInterface
     {
         return false;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getFriends()
+    {
+        return $this->friends;
+    }
+
+    /**
+     * @param Friend $friend
+     * @return User
+     */
+    public function setFriend(Friend $friend)
+    {
+        $this->friends = $friend;
+        return $this;
+    }
+
+
 }
 

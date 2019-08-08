@@ -16,6 +16,9 @@ use WalkAroundBundle\Service\User\UserServiceInterface;
 
 class MessageController extends Controller
 {
+    const SUCCESS_SEND = "Success send mail!";
+    const SUCCESS_DEL = "Success deleted mail!";
+
     /** @var User */
     private $currentUser;
     private $messageService;
@@ -60,7 +63,7 @@ class MessageController extends Controller
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      *
-     * @Route("/mailbox/new/{id}", name="mailbox_new", methods={"GET"})
+     * @Route("/mailbox/new/{id}", name="mailbox_new", methods={"GET"}, requirements={"id"="\d+"})
      * @param int $id
      * @return RedirectResponse|Response
      */
@@ -77,7 +80,7 @@ class MessageController extends Controller
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      *
-     * @Route("/mailbox/new/{id}", name="mailbox_new_process", methods={"POST"})
+     * @Route("/mailbox/new/{id}", name="mailbox_new_process", methods={"POST"}, requirements={"id"="\d+"})
      * @param Request $request
      * @param int $id
      * @return RedirectResponse
@@ -91,8 +94,10 @@ class MessageController extends Controller
         /** @var Message $message */
         $message = new Message();
 
-        if( $this->messageService->createMessage($this->createForm(MessageNewType::class, $message ), $message->setForId($id), $request  ))
+        if( $this->messageService->createMessage($this->createForm(MessageNewType::class, $message ), $message->setForId($id), $request  )) {
+                $this->addFlash( 'info', self::SUCCESS_SEND);
             return $this->redirectToRoute( 'user_profile', ['id'=> $id] );
+        }
 
         return $this->redirectToRoute( 'mailbox_new', ['id' => $id ] );
     }
@@ -100,7 +105,7 @@ class MessageController extends Controller
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      *
-     * @Route("/mailbox/{id}/view", name="mailbox_view", methods={"GET"})
+     * @Route("/mailbox/{id}/view", name="mailbox_view", methods={"GET"}, requirements={"id"="\d+"})
      */
     public function viewAction( int $id )
     {
@@ -113,7 +118,7 @@ class MessageController extends Controller
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      *
-     * @Route("/mailbox/{id}/delete", name="mailbox_delete_process", methods={"GET"})
+     * @Route("/mailbox/{id}/delete", name="mailbox_delete_process", methods={"GET"}, requirements={"id"="\d+"})
      */
     public function deleteProcess(int $id)
     {
@@ -123,8 +128,8 @@ class MessageController extends Controller
         if( $messageEntity == null or $messageEntity->getForId() !== $this->currentUser->getId() ) {
             return $this->redirectToRoute('mailbox_inbox');
         }
-
         $this->messageService->removeMessage( $messageEntity );
+        $this->addFlash( 'info', self::SUCCESS_DEL);
         return $this->redirectToRoute('mailbox_inbox');
     }
 }

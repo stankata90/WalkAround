@@ -1,19 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block main %}
-    <div class="container">
-        <div class="row mx-3 my-3">
-            <h3 class="">Mail View</h3>
-            <hr />
-            {%  if message.fromUser.id != app.user.id %}
-            <a class="nav-link" href="{{ path('mailbox_delete_process', {id:message.id}) }}">Delete Mail</a>
-            {% endif %}
-            <a class="nav-link" href="{{ path('mailbox_inbox') }}">InBox Mail</a>
-            <a class="nav-link" href="{{ path('mailbox_outbox') }}">OutBox Mail</a>
-        </div>
-    </div>
+{% block title %}Mail View{% endblock %}
 
-    <hr />
+{% block page_title %}Mail New{% endblock %}
+
+ {% block page_button %}
+     {%  if message.fromUser.id != app.user.id %}
+         <a class="btn btn-sm btn-outline-secondary" href="{{ path('mailbox_delete_process', {id:message.id}) }}">Delete Mail</a>
+     {% endif %}
+
+     <a class="btn btn-sm btn-outline-secondary" href="{{ path('mailbox_inbox') }}">InBox Mail</a>
+     <a class="btn btn-sm btn-outline-secondary" href="{{ path('mailbox_outbox') }}">OutBox Mail</a>
+ {% endblock %}
+
+{% block main %}
+
 
     <div class="container">
         <div class="row mx-3 my-3">

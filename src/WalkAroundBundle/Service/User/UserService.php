@@ -20,7 +20,12 @@ class UserService implements UserServiceInterface
 
     private $encryption;
 
-    public function __construct(Security $security, UserRepository $userRepository, RoleServiceInterface $roleService, ArgonEncryptionService $encryption )
+    public function __construct(
+        Security $security,
+        UserRepository $userRepository,
+        RoleServiceInterface $roleService,
+        ArgonEncryptionService $encryption
+    )
     {
         $this->userRepository = $userRepository;
         $this->roleService = $roleService;
@@ -74,6 +79,9 @@ class UserService implements UserServiceInterface
      */
     public function findAll()
     {
+
         return $this->userRepository->findAll();
     }
+
+
 }

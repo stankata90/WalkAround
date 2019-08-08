@@ -4,18 +4,15 @@
     All Destination
 {% endblock %}
 
+{% block page_title %}Destinations{% endblock %}
+
+{% block page_button %}
+    <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_create')  }}" >New Destination</a>
+{% endblock %}
+
+
+
 {% block main %}
-
-   
-    <div class="container">
-        <div class="row mx-3 my-3">
-            <h3>Destinations</h3>
-            <hr />
-            <a class='float-right' href="{{ path('destination_create')  }}" >New Destination</a>
-        </div>
-    </div>
-
-    <hr />
 
     <div class="container">
             <div class="row">
@@ -23,7 +20,9 @@
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow">
                             <a href="{{ path('destination_view', {id:destination.id} ) }}">
-                                <img class="card-img-top" src="{{ asset('uploads/images/destination/') ~ destination.image }}" alt="Card image cap">
+                                {% set coverimg = asset('uploads/images/destination/') ~ destination.image %}
+                                <div class="avatar img-thumbnail card-img-top" style="background: url('{{ coverimg }}') no-repeat center; background-size: cover; display: block;  height: 300px; " >
+                                </div>
                             </a>
 
                             <div class="card-body">

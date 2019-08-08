@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Check;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,15 +18,15 @@ use WalkAroundBundle\Service\User\UserServiceInterface;
 
 class UserController extends Controller
 {
+    const SUCCESS_REG = "Success register, please login !";
     private $userService;
     private $security;
 
-    public function __construct(UserServiceInterface $userService, Security $security )
+    public function __construct( UserServiceInterface $userService, Security $security )
     {
-        $this->userService = $userService;
         $this->security = $security;
+        $this->userService = $userService;
     }
-
 
 
     /**
@@ -56,11 +57,6 @@ class UserController extends Controller
      * @return Response
      */
     public function registerAction( ) {
-
-        $this->addFlash( 'info', 'Success registration !');
-
-
-
         return $this->render( 'user/register.html.twig', ['form' => $this->createForm( UserRegisterType::class )->createView() ] );
 
     }
@@ -77,7 +73,11 @@ class UserController extends Controller
                 $userEntity = new User();
                 $form = $this->createForm( UserRegisterType::class, $userEntity );
                 $form->handleRequest( $request );
+                $fileName = md5( uniqid() ) . ".png";
+                copy($this->getParameter('user_directory')."/avatar.png", $this->getParameter('user_directory') ."/". $fileName);
+                $userEntity->setImage($fileName);
                 $this->userService->save( $userEntity );
+                $this->addFlash('info', self::SUCCESS_REG);
                 return $this->redirectToRoute( "homepage");
             } catch  ( Exception $e ) {
                 $this->addFlash('error', $e->getMessage() );
@@ -112,8 +112,8 @@ class UserController extends Controller
     /**
      * @Check("is_granted('IS_AUTHENTICATED_FULLY')")
      * @Route( "user/myprofile", name="my_profile_process", methods={"POST"} )
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     * @var $userEntity User
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function editProfileProcess( Request $request )
     {
@@ -164,7 +164,9 @@ class UserController extends Controller
     /**
      * @Check("is_granted('IS_AUTHENTICATED_FULLY')")
      *
-     * @Route( "/user/{id}/view", name="user_profile", methods={"GET"})
+     * @Route( "/user/{id}/view", name="user_profile", methods={"GET"}, requirements={"id"="\d+"})
+     * @param int $id
+     * @return RedirectResponse|Response
      */
     public function userAction( int $id ) {
         /** @var User $user */
@@ -173,6 +175,7 @@ class UserController extends Controller
         if( !$user )
           return $this->redirectToRoute('homepage');
 
-        return $this->render('user/user.html.twig', ['user' =>$user]);
+
+        return $this->render('user/user.html.twig', ['user' =>$user] );
     }
 }

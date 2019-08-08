@@ -3,6 +3,7 @@
 namespace WalkAroundBundle\Form\Comment;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,6 +15,9 @@ class CommentCreateType extends AbstractType
     {
         $builder
             ->add('content', TextType::class)
+            ->add('idCommentRe', NumberType::class, [
+                'data_class' => Null
+            ])
         ;
     }
 

@@ -1,3 +1,9 @@
 app:
     resource: '@WalkAroundBundle/Controller/'
     type: annotation
+
+pageNotFound:
+    path:  /{path}
+    defaults: { _controller: WalkAroundBundle:PageNotFound:pageNotFound, path: '' }
+    requirements:
+        path: .*

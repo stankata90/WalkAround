@@ -6,7 +6,8 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use WalkAroundBundle\Entity\CommentDestination;
+use Doctrine\ORM\OptimisticLockException;
+use WalkAroundBundle\Entity\CommentDestinationLiked;
 
 /**
  * CommentDestinationLikedRepository
@@ -19,6 +20,35 @@ class CommentDestinationLikedRepository extends EntityRepository
     public function __construct( EntityManagerInterface $em, Mapping\ClassMetadata $class = null )
     {
         /** @var EntityManager $em */
-        parent::__construct($em, $class == null ? new Mapping\ClassMetadata( CommentDestination::class ) : $class );
+        parent::__construct($em, $class == null ? new Mapping\ClassMetadata( CommentDestinationLiked::class ) : $class );
+    }
+
+    public function insert( CommentDestinationLiked $like ) {
+        try{
+            $this->_em->persist( $like );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function update( CommentDestinationLiked $like ) {
+
+        try{
+            $this->_em->merge( $like );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function delete( CommentDestinationLiked $like ) {
+        try{
+            $this->_em->remove( $like );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
     }
 }

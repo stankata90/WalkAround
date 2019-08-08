@@ -4,25 +4,26 @@
     {{ user.fullName|capitalize }}
 {% endblock %}
 
+{% block page_title %}View User{% endblock %}
+
+ {% block page_button %}
+     <a href="{{ path('mailbox_new', {id:user.id})  }}"  class="btn btn-sm btn-outline-secondary">Send Message</a>
+     {% if user.friends|filter( v => v.myUser.getId == app.user.getId )|length == 0 and user.id != app.user.getId%}
+        <a href="{{ path('user_friend_invite', {id:user.id})  }}" class="btn btn-sm btn-outline-secondary" >Add Friend</a>
+     {% endif %}
+ {% endblock %}
+
+
 {% block main %}
-<div class="container">
-    <div class="row mx-3 my-3">
-        <h3>User</h3>
-        <hr />
-        <a href="{{ path('mailbox_new', {id:user.id})  }}"  >Send Message</a>
-        &nbsp;
-        <a href="{{ path('mailbox_new', {id:user.id})  }}" >Add Friend</a>
-    </div>
-</div>
-
-<hr />
 
 <div class="container">
 
-
-        <div class="container col-12 ">
+    <div class="container col-12 ">
             <div class="row m-auto col-12">
-                <img  alt="" class="m-auto" src="{{ asset('uploads/images/user/' ~ user.image) }}" width="600"/>
+                {% set bgavatar = asset('uploads/images/user/') ~ user.image %}
+                <div class="avatar img-thumbnail card-img-top" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block;  height: 400px; " >
+                </div>
+{#                <img  alt="" class="m-auto img-thumbnail  " src="{{ asset('uploads/images/user/' ~ user.image) }}" width="600"/>#}
             </div>
 
         </div>

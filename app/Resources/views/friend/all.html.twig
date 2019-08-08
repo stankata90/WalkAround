@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    My Friends
+{% endblock %}
+
+{% block page_title %}My Friends List{% endblock %}
+
+
+{% block main %}
+
+
+    <div class="container">
+        <div class="row">
+
+            {% for invited in app.user.friends|filter( v => v.friendship.acceptedOn == null and v.friendship.acceptedId == app.user.getId  ) %}
+                {#                {{ invited.friendUser.email }}#}
+                <div class="col-md-3">
+                    <a href="{{ path('user_profile', {id:invited.myUser.id} ) }}">
+                        <div class="card mb-4 box-shadow">
+                            <a href="{{ path('user_profile', {id:invited.myUser.id} ) }}">
+
+                                {% set bgavatar = asset('uploads/images/user/') ~ invited.myUser.image %}
+                                <div class="avatar card-img-top img-thumbnail" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block; min-height: 200px; " >
+                                    <span class="badge badge-danger badge-pill">New</span>
+                                </div>
+
+                            </a>
+
+                            <div class="card-body">
+                                <h5 class="m-2" >{{ invited.myUser.fullName }}</h5><br/>
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div class="btn-group">
+                                        <a href="{{ path('user_friend_accept', {id:invited.myUser.id} ) }}" class="btn btn-sm btn-outline-secondary">Accept Invite</a>
+                                        <a href="{{ path('user_friend_delete_process', {id:invited.myUser.id} ) }}" class="btn btn-sm btn-outline-secondary">Cancel Invite</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+
+            {% for invited in app.user.friends|filter( v => v.friendship.acceptedOn == null and v.friendship.sentId == app.user.getId  ) %}
+{#                {{ invited.friendUser.email }}#}
+                <div class="col-md-3">
+                    <a href="{{ path('user_profile', {id:invited.myUser.id} ) }}">
+                        <div class="card mb-4 box-shadow">
+                            <a href="{{ path('user_profile', {id:invited.myUser.id} ) }}">
+
+                                {% set bgavatar = asset('uploads/images/user/') ~ invited.myUser.image %}
+                                <div class="avatar card-img-top img-thumbnail" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block; min-height: 200px; " >
+                                    <span class="badge badge-info badge-pill">Already Invited</span>
+                                </div>
+
+                            </a>
+
+                            <div class="card-body">
+                                <h5 class="m-2" >{{ invited.myUser.fullName }}</h5><br/>
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div class="btn-group">
+                                        <a href="{{ path('mailbox_new', {id:invited.myUser.id} ) }}" class="btn btn-sm btn-outline-secondary">Send Message</a>
+                                        <a href="{{ path('user_friend_delete_process', {id:invited.myUser.id} ) }}" class="btn btn-sm btn-outline-secondary">Cancel Invite</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+            {% for friend in friends %}
+
+                <div class="col-md-3">
+                    <a href="{{ path('user_profile', {id:friend.friendUser.id} ) }}">
+                        <div class="card mb-4 box-shadow">
+                            <a href="{{ path('user_profile', {id:friend.friendUser.id} ) }}">
+
+                                {% set bgavatar = asset('uploads/images/user/') ~ friend.friendUser.image %}
+                                <div class="avatar card-img-top img-thumbnail" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block; min-height: 200px; " >
+                                </div>
+
+                            </a>
+
+                            <div class="card-body">
+                                <h5 class="m-2" >{{ friend.friendUser.fullName }}</h5><br/>
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div class="btn-group">
+                                        <a href="{{ path('mailbox_new', {id:friend.friendUser.id} ) }}" class="btn btn-sm btn-outline-secondary">Send Message</a>
+                                        <a href="{{ path('user_friend_delete_process', {id:friend.friendUser.id} ) }}" class="btn btn-sm btn-outline-secondary">Delete Friend</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+

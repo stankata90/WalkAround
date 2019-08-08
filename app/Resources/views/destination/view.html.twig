@@ -4,21 +4,24 @@
     {{ destination.name }}
 {% endblock %}
 
+{% block page_title %}{{ destination.name }}{% endblock %}
+
+ {% if app.user and app.user.id == destination.addedBy %}
+    {% block page_button %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
+    {% endblock %}
+ {% endif %}
+
+
 {% block main %}
-    <div class="container">
-        <div class="row mx-3 my-3">
-            <h3 class="">{{ destination.name }}</h3>
-            <hr />
-            {% if app.user and app.user.id == destination.addedBy %}
-                <a class="nav-link" href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
-            {% endif %}
-        </div>
-    </div>
+
 
     <div class="container">
         <div class="row col-12">
             <div class="p-2 col-6">
-                <img src="{{ asset('uploads/images/destination/') ~ destination.image }}" width="500" alt="" />
+                {% set coverimg = asset('uploads/images/destination/') ~ destination.image %}
+                <div class="avatar img-thumbnail card-img-top" style="background: url('{{ coverimg }}') no-repeat center; background-size: cover; display: block; width: 500px;  height: 500px; " >
+                </div>
             </div>
             <div class="text-justify col-6">
                 {{ destination.description }}
@@ -29,9 +32,10 @@
 
         <div class="row col-12">
             <div class="text-center align-middle p-2 col-4">
-                <img style="border-radius: 50%;" src=" {{ asset('uploads/images/user/') ~ destination.addedUser.image }}" width="50" height="50" alt="NoAvatar"><br />
+                {% set avatar = asset('uploads/images/user/') ~ destination.addedUser.image %}
+                <div class="avatar img-thumbnail card-img-top" style="background: url('{{ avatar }}') no-repeat center; background-size: cover; display: inline-block;  width: 50px; height: 50px; " >
+                </div><br/>
                 <small>{{ destination.addedUser.fullName }}</small>
-
 
             </div>
             <div class="text-center m-auto p-2 col-4">
@@ -52,17 +56,20 @@
             {% if app.user %}
                 <div class="col-3  m-auto">
 
-                {% if destinationLiked|length == 0 or destinationLiked[0].destinationId != destination.id and destinationLiked[0].userId != app.user.id %}
-                    <a href="{{ path('destination_like' ,{id:destination.id} ) }}" >Like</a>
-                {% else %}
-                    <a href="{{ path('destination_unlike' ,{id:destination.id} ) }}" >Un Like</a>
-                {% endif %}
-                <a href="#" data-toggle="modal" data-target="#exampleModal">
-                    Add Comment
-                </a>
-            </div>
-
-
+                <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
+                                {% if destinationLiked|length == 0 or destinationLiked[0].destinationId != destination.id and destinationLiked[0].userId != app.user.id %}
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_like' ,{id:destination.id} ) }}" >Like</a>
+                                {% else %}
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_unlike' ,{id:destination.id} ) }}" >Un Like</a>
+                                {% endif %}
+                                <a class="btn btn-sm btn-outline-secondary" href="#" data-toggle="modal" data-target="#exampleModal">
+                                    Add Comment
+                                </a>
+                            </div>
+                        </div>
+                </div>
             {% endif %}
         </div>
     </div>
@@ -75,10 +82,13 @@
 
                     {% if comment.idcommentre == null  %}
                         <hr />
-                        <table style="">
+                        <table class="col-12">
                             <tr>
                                 <td style="width: 1px;">
-                                    <img src="{{ asset('uploads/images/user/' ~ comment.addedUser.image) }}" width="100" alt=""/>
+                                    {% set bgavatar = asset('uploads/images/user/') ~ comment.addedUser.image %}
+                                    <div class="avatar img-thumbnail card-img-top" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block; width: 75px;  height: 75px; " >
+                                    </div>
+{#                                    <img src="{{ asset('uploads/images/user/' ~ comment.addedUser.image) }}" width="100" alt=""/>#}
                                 </td>
                                 <td>
                                     <small>{{ comment.addedUser.username }}</small>
@@ -91,8 +101,12 @@
                                 </td>
                                 <td>
                                     {{ comment.addedOn|date("F jS \\a\\t g:ia") }}
-                                    <a href="">Like</a>
-                                    <a href="">Reply</a>
+                                    {% if app.user and comment.likes|filter( v => v.userId == app.user.getId )|length  == 0 %}
+                                        <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:comment.id})  }}">Like({{ comment.likes|length }})</a>
+                                    {% else %}
+                                        <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ comment.likes|length }}</span> </span>
+                                        {% endif %}
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_view', {id:destination.id, comment:comment.id}) }}">Reply</a>
                                 </td>
                             </tr>
 
@@ -101,11 +115,28 @@
                                     <td></td>
                                     <td>
                                         <hr />
-                                        <table>
+
+                                        <table class="well">
                                              <tr>
-                                                 <td><img src="{{ asset('uploads/images/user/' ~ re.addedUser.image) }}" width="50" alt=""/></td>
-                                                 <td>{{ re.content }}</td>
+                                                 <td>
+                                                     {% set bgavatarre = asset('uploads/images/user/') ~ re.addedUser.image %}
+                                                     <div class="avatar img-thumbnail card-img-top" style="background: url('{{ bgavatarre }}') no-repeat center; background-size: cover; display: block; width: 75px;  height: 75px; " >
+                                                     </div>
+{#                                                     <img src="{{ asset('uploads/images/user/' ~ re.addedUser.image) }}" width="50" alt=""/></td>#}
+                                                 <td  class=" align-text-top ">{{ re.content }}</td>
                                              </tr>
+                                            <tr>
+                                                <td>
+
+                                                </td>
+                                                <td>
+                                                    {% if app.user and re.likes|filter( v => v.userId == app.user.getId )|length  == 0 %}
+                                                        <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:re.id})  }}">Like({{ re.likes|length }})</a>
+                                                    {% else %}
+                                                        <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ comment.likes|length }}</span> </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
                                          </table>
                                      </td>
                                 </tr>
@@ -118,15 +149,17 @@
         </div>
     {% endif %}
 
-
-
     <!-- Modal -->
     <form name="commentForm" action="{{ path('destination_comment_new', {id:destination.id}) }}" id="commentForm" method="POST">
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel"> New comment for "{{ destination.name }}" destination </h5>
+                        {%  if re == 0  %}
+                            <h5 class="modal-title" id="exampleModalLabel"> New comment for "{{ destination.name }}" destination </h5>
+                        {% else %}
+                            <h5 class="modal-title" id="exampleModalLabel"> Reply comment</h5>
+                        {% endif %}
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -142,8 +175,17 @@
                 </div>
             </div>
         </div>
+        <input type="hidden" name="comment[idCommentRe]" value="{%  if re != 0  %}{{ re }}{% endif %}" />
         {{ form_row(formComment._token) }}
     </form>
+
+    {%  if re != 0  %}
+        <script>
+            $( document ).ready(function() {
+                $('#exampleModal').modal({show:true});
+            });
+        </script>
+    {% endif %}
 
 
 {% endblock %}

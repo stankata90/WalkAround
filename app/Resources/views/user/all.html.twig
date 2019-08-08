@@ -1,29 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    All User
-{% endblock %}
+{% block title %} All User {% endblock %}
+
+{% block page_title %} All User {% endblock %}
 
 {% block main %}
-    <h3 class="mx-3">Users</h3>
-    <hr />
+
     <div class="container">
         <div class="row">
             {% for user in users %}
+
                 <div class="col-md-3">
                     <a href="{{ path('user_profile', {id:user.id} ) }}">
                         <div class="card mb-4 box-shadow">
                             <a href="{{ path('user_profile', {id:user.id} ) }}">
-                                <img style="border-radius: 50%; border: 1px solid #5eb5e0;" class="card-img-top" src="{{ asset('uploads/images/user/') ~ user.image }}" alt="user image">
+
+                                {% set bgavatar = asset('uploads/images/user/') ~ user.image %}
+                                <div class="avatar card-img-top img-thumbnail" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block; min-height: 200px; " >
+                                </div>
+
                             </a>
 
                             <div class="card-body">
                                 <h5 class="m-2" >{{ user.fullName }}</h5><br/>
                                 <div class="d-flex justify-content-between align-items-center">
 
-                                    <div class="btn-group">
+                                    <div class="btn-group m-auto">
                                         <a href="{{ path('mailbox_new', {id:user.id} ) }}" class="btn btn-sm btn-outline-secondary">Send Message</a>
-                                        <a href="{{ path('user_profile', {id:user.id} ) }}" class="btn btn-sm btn-outline-secondary">Add Friend</a>
+                                        {% if app.user and user.friends|filter( v => v.myUser.getId == app.user.getId )|length == 0 and user.id != app.user.getId%}
+                                            <a href="{{ path('user_friend_invite', {id:user.id} ) }}" class="btn btn-sm btn-outline-secondary">Add Friend</a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

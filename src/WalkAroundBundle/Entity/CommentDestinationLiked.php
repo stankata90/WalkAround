@@ -2,9 +2,6 @@
 
 namespace WalkAroundBundle\Entity;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,7 +38,7 @@ class CommentDestinationLiked
     /**
      * @var string
      *
-     * @ORM\Column(name="addedOn", type="string", length=255)
+     * @ORM\Column(name="addedOn", type="datetime", length=255)
      */
     private $addedOn;
 
@@ -155,10 +152,12 @@ class CommentDestinationLiked
 
     /**
      * @param CommentDestination $commentDestination
+     * @return CommentDestinationLiked
      */
     public function setCommentDestination($commentDestination)
     {
         $this->commentDestination = $commentDestination;
+        return $this;
     }
 
     /**

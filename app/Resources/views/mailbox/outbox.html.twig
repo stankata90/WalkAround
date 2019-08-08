@@ -2,17 +2,16 @@
 {% block title %}
     Mail OutBox
 {% endblock %}
-{% block main %}
-    <div class="container">
-        <div class="row mx-3 my-3">
-            <h3 class="">Mail OutBox</h3>
-            <hr />
-            <a class="nav-link" href="{{ path('mailbox_inbox') }}">InBox Mail</a>
-            <a class="nav-link" href="{{ path('mailbox_outbox') }}">OutBox Mail</a>
-        </div>
-    </div>
 
-    <hr />
+{% block page_title %}Mail OutBox{% endblock %}
+
+ {% block page_button %}
+     <a class="btn btn-sm btn-outline-secondary" href="{{ path('mailbox_inbox') }}">InBox Mail</a>
+     <a class="btn btn-sm btn-outline-secondary" href="{{ path('mailbox_outbox') }}">OutBox Mail</a>
+ {% endblock %}
+
+{% block main %}
+
 
     <div class="container">
         <div class="row mx-3 my-3">

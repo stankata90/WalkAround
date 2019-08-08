@@ -3,7 +3,6 @@
 namespace WalkAroundBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use WalkAroundBundle\Service\Destination\DestinationServerInterface;
 
@@ -15,10 +14,11 @@ class DefaultController extends Controller
         $this->destinationService = $destination;
     }
 
+
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         return $this->render('destination/all.html.twig', array('destinations' => $this->destinationService->findAll() ));
     }
