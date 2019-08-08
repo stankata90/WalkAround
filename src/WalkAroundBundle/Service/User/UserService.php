@@ -4,7 +4,9 @@
 namespace WalkAroundBundle\Service\User;
 use DateTime;
 use Exception;
+use Symfony\Component\Form\FormInterface;
 use WalkAroundBundle\Entity\Role;
+use WalkAroundBundle\Form\User\UserRegisterType;
 use WalkAroundBundle\Service\Encryption\ArgonEncryptionService;
 use Symfony\Component\Security\Core\Security;
 use WalkAroundBundle\Entity\User;
@@ -93,28 +95,79 @@ class UserService implements UserServiceInterface
     }
 
     /**
-     * @param $user
+     * @param $userController
+     * @param $request
+     * @param $form
+     * @return mixed
      * @throws Exception
      */
-    public function checkRegisterForm($user)
+    public function registerProcess($userController, $request, &$form)
     {
+        $userEntity = new User();
 
-        if( !ctype_alpha( $user['fullName'] ) OR ( mb_strlen( $user['fullName'] ) < 3 OR mb_strlen( $user['fullName'] ) > 50 ) ) {
+        /** @var FormInterface $form */
+        $form = $userController->createForm( UserRegisterType::class, $userEntity );
+        $arrValidate = $request->request->get("user");
+        $form->handleRequest( $request );
+
+        $this->verifyName( $arrValidate['fullName'] );
+        $this->verifyAge( $arrValidate['age'] );
+        $this->verifySex( $arrValidate['sex'] );
+        $this->verifyPassword( $arrValidate['password']);
+
+        $fileName = md5( uniqid() ) . ".png";
+        copy($userController->getParameter('user_directory')."/avatar.png", $userController->getParameter('user_directory') ."/". $fileName);
+        $userEntity->setImage($fileName);
+        $this->save( $userEntity );
+
+        return true;
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     * @throws Exception
+     */
+    public function verifyName( $name ):bool {
+        if( !ctype_alpha( $name ) OR ( mb_strlen( $name ) < 3 OR mb_strlen( $name ) > 50 ) ) {
             throw new Exception( self::NAME_REQ );
         }
+        return true;
+    }
 
-        if( !ctype_digit( $user['age']) or ( $user['age'] > 100 &&  $user['age'] < 10 ) ) {
+    /**
+     * @param $age
+     * @return bool
+     * @throws Exception
+     */
+    public function verifyAge( $age ):bool{
+        if( !ctype_digit( $age) or ( $age > 100 &&  $age < 10 ) ) {
             throw new Exception( self::AGE_REQ );
         }
+        return true;
+    }
 
-        if( !( $user['sex'] == "male" OR $user['sex'] == "female" )) {
+    /**
+     * @param $sex
+     * @return bool
+     * @throws Exception
+     */
+    public function verifySex( $sex ):bool {
+        if( !( $sex == "male" OR $sex == "female" )) {
             throw new Exception( self::SEX_REQ );
         }
+        return true;
+    }
 
-        if( !ctype_alnum($user['password'] ) or !( mb_strlen( $user['password'] ) > 20  OR mb_strlen( $user['password'] ) < 4 )) {
+    /**
+     * @param $password
+     * @return bool
+     * @throws Exception
+     */
+    public function verifyPassword( $password ):bool {
+        if( !ctype_alnum( $password ) or !( mb_strlen( $password ) > 20  OR mb_strlen( $password ) < 4 )) {
             throw new Exception( self::PASS_REQ );
         }
-
-        var_dump( $user);
+        return true;
     }
 }

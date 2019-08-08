@@ -2,9 +2,10 @@
 
 
 namespace WalkAroundBundle\Controller;
+use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Check;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +28,16 @@ class UserController extends Controller
         $this->security = $security;
         $this->userService = $userService;
 
+    }
+
+    public function createForm($type, $data = null, array $options = [])
+    {
+        return parent::createForm( $type, $data, $options);
+    }
+
+    public function getParameter($name)
+    {
+        return parent::getParameter($name);
     }
 
 
@@ -58,6 +69,7 @@ class UserController extends Controller
      * @return Response
      */
     public function registerAction( ) {
+
         return $this->render( 'user/register.html.twig', ['form' => $this->createForm( UserRegisterType::class )->createView() ] );
 
     }
@@ -69,27 +81,17 @@ class UserController extends Controller
      * @return Response
      */
     public function registerProcess(Request $request ) {
-            try {
+        /** @var FormInterface $form */
+        try {
+            $this->userService->registerProcess( $this, $request, $form );
+            $this->addFlash('info', self::SUCCESS_REG);
 
-                $userEntity = new User();
-                $form = $this->createForm( UserRegisterType::class, $userEntity );
+            return $this->goHome();
+        } catch  ( Exception $e ) {
 
-
-
-                $form->handleRequest( $request );
-                $this->userService->checkRegisterForm( $request->request->get('user') );
-
-                $fileName = md5( uniqid() ) . ".png";
-                copy($this->getParameter('user_directory')."/avatar.png", $this->getParameter('user_directory') ."/". $fileName);
-                $userEntity->setImage($fileName);
-                $this->userService->save( $userEntity );
-                $this->addFlash('info', self::SUCCESS_REG);
-                return $this->redirectToRoute( "homepage");
-
-            } catch  ( Exception $e ) {
-                $this->addFlash('error', $e->getMessage() );
-                return $this->render( 'user/register.html.twig', ['form' => $form->createView() ] );
-            }
+            $this->addFlash('error', $e->getMessage() );
+            return $this->render( 'user/register.html.twig', ['form' => $form->createView() ] );
+        }
     }
 
     /**

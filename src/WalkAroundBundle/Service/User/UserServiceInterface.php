@@ -3,7 +3,8 @@
 
 namespace WalkAroundBundle\Service\User;
 
-
+use Symfony\Component\HttpFoundation\Request;
+use WalkAroundBundle\Controller\UserController;
 use WalkAroundBundle\Entity\User;
 
 interface UserServiceInterface
@@ -12,5 +13,11 @@ interface UserServiceInterface
     public function updateProfile( string $currentPassword, User $newUser) : bool;
     public function findOneById( int $id ) : ?object;
     public function findAll();
-    public function checkRegisterForm( $user );
+
+    public function registerProcess( UserController $controller, Request $request, &$form );
+
+    public function verifyName( $name ):bool;
+    public function verifyAge( $age ):bool;
+    public function verifySex( $sex ):bool;
+    public function verifyPassword( $password ):bool;
 }
