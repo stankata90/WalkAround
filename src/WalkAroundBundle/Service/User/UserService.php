@@ -113,7 +113,7 @@ class UserService implements UserServiceInterface
         $this->verifyName( $arrValidate['fullName'] );
         $this->verifyAge( $arrValidate['age'] );
         $this->verifySex( $arrValidate['sex'] );
-        $this->verifyPassword( $arrValidate['password']);
+        $this->verifyPassword( $arrValidate['password']['first']);
 
         $fileName = md5( uniqid() ) . ".png";
         copy($userController->getParameter('user_directory')."/avatar.png", $userController->getParameter('user_directory') ."/". $fileName);
@@ -123,13 +123,18 @@ class UserService implements UserServiceInterface
         return true;
     }
 
+    public function verifyEmail($email): bool
+    {
+        // TODO: Implement verifyEmail() method.
+    }
+
     /**
      * @param $name
      * @return bool
      * @throws Exception
      */
     public function verifyName( $name ):bool {
-        if( !ctype_alpha( $name ) OR ( mb_strlen( $name ) < 3 OR mb_strlen( $name ) > 50 ) ) {
+        if( !ctype_alpha($name) OR mb_strlen( $name ) < 3 OR mb_strlen( $name ) > 50 ) {
             throw new Exception( self::NAME_REQ );
         }
         return true;
@@ -141,7 +146,7 @@ class UserService implements UserServiceInterface
      * @throws Exception
      */
     public function verifyAge( $age ):bool{
-        if( !ctype_digit( $age) or ( $age > 100 &&  $age < 10 ) ) {
+        if( !ctype_digit($age) OR $age > 100 OR  $age < 10 ) {
             throw new Exception( self::AGE_REQ );
         }
         return true;
@@ -153,7 +158,7 @@ class UserService implements UserServiceInterface
      * @throws Exception
      */
     public function verifySex( $sex ):bool {
-        if( !( $sex == "male" OR $sex == "female" )) {
+        if( $sex != "male" AND $sex != "female" ) {
             throw new Exception( self::SEX_REQ );
         }
         return true;
@@ -165,9 +170,11 @@ class UserService implements UserServiceInterface
      * @throws Exception
      */
     public function verifyPassword( $password ):bool {
-        if( !ctype_alnum( $password ) or !( mb_strlen( $password ) > 20  OR mb_strlen( $password ) < 4 )) {
+        if( !ctype_digit($password) OR mb_strlen( $password ) > 20 OR mb_strlen( $password ) < 4 ) {
             throw new Exception( self::PASS_REQ );
         }
         return true;
     }
+
+
 }

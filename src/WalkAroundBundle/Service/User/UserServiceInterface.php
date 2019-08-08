@@ -16,6 +16,7 @@ interface UserServiceInterface
 
     public function registerProcess( UserController $controller, Request $request, &$form );
 
+    public function verifyEmail( $email ):bool;
     public function verifyName( $name ):bool;
     public function verifyAge( $age ):bool;
     public function verifySex( $sex ):bool;
