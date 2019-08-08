@@ -41,7 +41,10 @@ class UserService implements UserServiceInterface
 
         /** @var Role $userRole */
         $userRole = $this->roleService->findOneByName( 'USER' );
+
+
         $user->addRole( $userRole );
+
 
         $user->setAddedOn( new DateTime('now'));
 

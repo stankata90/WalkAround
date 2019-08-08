@@ -21,4 +21,6 @@ class RoleRepository extends EntityRepository
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( Role::class ) : $class );
     }
+
+
 }

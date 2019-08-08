@@ -29,4 +29,5 @@ class RegionRepository extends EntityRepository
         return $this->findBy([], ['name' => 'ASC']);
 
     }
+
 }

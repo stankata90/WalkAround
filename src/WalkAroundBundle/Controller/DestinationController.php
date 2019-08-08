@@ -84,6 +84,7 @@ class DestinationController extends Controller
      */
     public function createProcess( Request $request ) {
 
+
         try{
             $destinationEntity = new Destination();
             $form = $this->createForm( DestinationCreateType::class, $destinationEntity);
@@ -92,15 +93,22 @@ class DestinationController extends Controller
             /** @var UploadedFile $image */
             $image = $form['image']->getData();
 
-            if( !$image->getError() ) {
+            if( $image->getError() == 0 ) {
                 $fileName = md5( uniqid() ) . ".". $image->guessExtension();
                 $image->move(
                     $this->getParameter( 'destination_directory'),
                     $fileName
                 );
                 $destinationEntity->setImage( $fileName );
+            } else{
+
+                throw new \Symfony\Component\Config\Definition\Exception\Exception('Image max size ' . ( (UploadedFile::getMaxFilesize() / 1024 ) /1024 ) ."mb" );
             }
-            $this->destinationService->save( $destinationEntity );
+
+
+            if( !$this->destinationService->save( $destinationEntity ) )
+                return $this->redirectToRoute('destination_create');
+
             $this->addFlash('info', self::SUCCESS_ADD);
             return  $this->redirectToRoute( 'destination_view', ['id'=>$destinationEntity->getId()]);
         } catch  ( Exception $e ) {
@@ -118,11 +126,16 @@ class DestinationController extends Controller
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @Route("/destination/{id}/edit", name="destination_edit", methods={"GET"}, requirements={"id"="\d+"})
-     *
+     * @param int $id
+     * @return RedirectResponse|Response
      */
-    public function editAction( int $id ) {
+    public function editAction( $id ) {
         /** @var Destination $destinationEntity */
-        $destinationEntity = $this->getDoctrine()->getRepository( Destination::class)->find( $id);
+        $destinationEntity = $this->getDoctrine()->getRepository( Destination::class)->find( intval( $id ) );
+
+        if(!$destinationEntity)
+            return $this->goHome();
+
         if( $this->getUser()->getId() != $destinationEntity->getAddedBy() ) {
             return $this->redirectToRoute('homepage' );
         }
@@ -142,13 +155,16 @@ class DestinationController extends Controller
      * @Route("/destination/{id}/edit", name="destination_edit_process", methods={"POST"}, requirements={"id"="\d+"})
      *
      * @param Request $request
-     * @param int $id
+     * @param $id
      * @return RedirectResponse
      */
-    public function editProcess( Request $request, int $id) {
+    public function editProcess( Request $request, $id) {
 
         /** @var Destination $destinationEntity*/
-        $destinationEntity = $this->getDoctrine()->getRepository(Destination::class)->find( $id );
+        $destinationEntity = $this->getDoctrine()->getRepository(Destination::class)->find( intval( $id ) );
+
+        if(!$destinationEntity)
+            return $this->goHome();
 
         if( $this->getUser()->getId() != $destinationEntity->getAddedBy() ) {
             return $this->redirectToRoute('homepage' );
@@ -198,8 +214,12 @@ class DestinationController extends Controller
      * @param int $id
      * @return Response
      */
-    public function deleteAction( int $id) {
-        $destinationEntity = $this->destinationService->findOneById( $id );
+    public function deleteAction( $id) {
+        $destinationEntity = $this->destinationService->findOneById( intval( $id ) );
+
+        if(!$destinationEntity)
+            return $this->goHome();
+
         $this->destinationService->remove( $destinationEntity );
         $this->addFlash('info', self::SUCCESS_DELETE);
         return $this->redirectToRoute('destination_all');
@@ -211,9 +231,13 @@ class DestinationController extends Controller
      * @param int|null $comment
      * @return Response
      */
-    public function viewAction(int $id, int $comment = null ) {
+    public function viewAction($id, int $comment = null ) {
 
-        $destinationEntity = $this->destinationService->findOneById( $id );
+        $destinationEntity = $this->destinationService->findOneById( intval( $id ) );
+
+        if(!$destinationEntity)
+            return $this->goHome();
+
         $dependence = $this->destinationService->viewDependence( $destinationEntity );
 
         $commentDestinationEntity = new CommentDestination();
@@ -237,6 +261,10 @@ class DestinationController extends Controller
     public function likeProcess(int $id) {
         $destinationEntity = $this->destinationService->findOneById( $id ) ;
 
+        if(!$destinationEntity)
+            return $this->goHome();
+
+
         if( $this->destinationLikedService->like( $destinationEntity, $this->getUser() ) ) {
             $destinationEntity->setCountLiked( $destinationEntity->getCountLiked()+1 );
             $this->destinationService->update( $destinationEntity );
@@ -257,6 +285,9 @@ class DestinationController extends Controller
 
         $destinationEntity = $this->destinationService->findOneById( $id ) ;
 
+        if(!$destinationEntity)
+            return $this->goHome();
+
         if( $this->destinationLikedService->unlike( $destinationEntity, $this->getUser() ) ) {
             $destinationEntity->setCountLiked( $destinationEntity->getCountLiked()-1 );
             $this->destinationService->update( $destinationEntity );
@@ -269,9 +300,15 @@ class DestinationController extends Controller
      * @Route("destination/{id}/cemment/new", name="destination_comment_new", methods={"POST"}, requirements={"id"="\d+"})
      * @param Request $request
      *
+     * @param $id
      * @return RedirectResponse
      */
     public function commentProcess(Request $request, $id) {
+        $destinationEntity = $this->destinationService->findOneById( $id );
+
+        if(!$destinationEntity)
+            return $this->goHome();
+
         $commentEntity = new CommentDestination();
         $form = $this->createForm( CommentCreateType::class, $commentEntity);
         $form->handleRequest( $request );
@@ -287,7 +324,7 @@ class DestinationController extends Controller
                 $commentEntity->setCommentsRe( $rr );
             }
 
-        if( $this->commentService->writeComment($commentEntity, $this->destinationService->findOneById( $id )) ) {
+        if( $this->commentService->writeComment($commentEntity, $destinationEntity) ) {
                 $this->addFlash('info', self::SUCCESS_COMMENT);
             return $this->redirectToRoute('destination_view', ['id' => $id]);
         }
@@ -303,10 +340,17 @@ class DestinationController extends Controller
      */
     public function likeComment( int $id ) {
         $commentEntity = $this->commentService->getCommentById( $id );
+
+        if(!$commentEntity)
+            return $this->goHome();
+
         $this->likeCommentService->addLike( $id );
 
         return $this->redirectToRoute('destination_view', ['id' => $commentEntity->getDestinationId()] );
     }
 
+    function goHome() {
+        return $this->redirectToRoute('destination_all');
+    }
 
 }

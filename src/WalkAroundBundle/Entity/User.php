@@ -136,8 +136,11 @@ class User implements UserInterface
 
     /**
      * @var ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Role", mappedBy="users")
-     * @ORM\JoinTable(name="user_role")
+     * @ORM\ManyToMany(targetEntity="Role")
+     * @ORM\JoinTable(name="user_role",
+     *          joinColumns={ @ORM\JoinColumn(name="user_id", referencedColumnName="id") },
+     *          inverseJoinColumns={ @ORM\JoinColumn(name="role_id", referencedColumnName="id") }
+     *      )
      */
     private $roles;
 
@@ -519,16 +522,6 @@ class User implements UserInterface
             $stringRoles[] =  $role->getRole();
         }
         return $stringRoles;
-    }
-
-    /**
-     * @param ArrayCollection $role
-     * @return User
-     */
-    public function setRole($role)
-    {
-        $this->roles[] = $role;
-        return $this;
     }
 
     /**

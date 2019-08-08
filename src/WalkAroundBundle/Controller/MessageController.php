@@ -67,12 +67,12 @@ class MessageController extends Controller
      * @param int $id
      * @return RedirectResponse|Response
      */
-    public function newAction(int $id)
+    public function newAction( $id )
     {
         /** @var User $user */
-        $user = $this->userService->findOneById( $id );
+        $user = $this->userService->findOneById( intval($id) );
         if( !$user )
-            return $this->redirectToRoute('mailbox_inbox');
+            return $this->goHome();
 
         return $this->render("mailbox/new.html.twig", ['user' => $user, 'form' => $this->createForm( MessageNewType::class)->createView() ]);
     }
@@ -85,12 +85,13 @@ class MessageController extends Controller
      * @param int $id
      * @return RedirectResponse
      */
-    public function newProcess( int $id, Request $request  )
+    public function newProcess( $id, Request $request  )
     {
         /** @var User $user */
-        $user = $this->userService->findOneById( $id );
+        $user = $this->userService->findOneById( intval( $id ) );
         if( !$user )
-            return $this->redirectToRoute('mailbox_inbox');
+            return $this->goHome();
+
         /** @var Message $message */
         $message = new Message();
 
@@ -106,11 +107,15 @@ class MessageController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      *
      * @Route("/mailbox/{id}/view", name="mailbox_view", methods={"GET"}, requirements={"id"="\d+"})
+     * @param $id
+     * @return Response
      */
-    public function viewAction( int $id )
+    public function viewAction( $id )
     {
         /** @var Message $mail */
-        $mail = $this->messageService->getMessageById( $id );
+        $mail = $this->messageService->getMessageById( intval( $id ) );
+        if( !$mail )
+            return $this->goHome();
 
         return $this->render("mailbox/view.html.twig", ['message' => $this->messageService->readMessage( $mail )] );
     }
@@ -119,17 +124,27 @@ class MessageController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      *
      * @Route("/mailbox/{id}/delete", name="mailbox_delete_process", methods={"GET"}, requirements={"id"="\d+"})
+     * @param $id
+     * @return RedirectResponse
      */
-    public function deleteProcess(int $id)
+    public function deleteProcess($id )
     {
         /** @var Message $messageEntity */
-        $messageEntity = $this->messageService->getMessageById( $id );
+        $messageEntity = $this->messageService->getMessageById( intval( $id ) );
+        if( !$messageEntity )
+            return $this->goHome();
+
         $this->currentUser = $this->getUser();
         if( $messageEntity == null or $messageEntity->getForId() !== $this->currentUser->getId() ) {
             return $this->redirectToRoute('mailbox_inbox');
         }
+
         $this->messageService->removeMessage( $messageEntity );
         $this->addFlash( 'info', self::SUCCESS_DEL);
+        return $this->redirectToRoute('mailbox_inbox');
+    }
+
+    public function goHome() {
         return $this->redirectToRoute('mailbox_inbox');
     }
 }

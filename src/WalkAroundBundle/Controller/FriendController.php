@@ -40,9 +40,9 @@ class FriendController extends Controller
     public function sendInvite(int $id) {
 
         /** @var User $user */
-        $user = $this->userService->findOneById($id);
+        $user = $this->userService->findOneById(intval( $id ));
         if(!$user)
-            return $this->redirectToRoute('users');
+            return $this->goHome();
 
         if( $this->friendService->sendInvite( $user ) ) {
             $this->addFlash('info', self::SUCCESS_ADD);
@@ -58,13 +58,12 @@ class FriendController extends Controller
      * @param int $id
      * @return RedirectResponse
      */
-    public function acceptInvite(int $id) {
+    public function acceptInvite($id) {
 
         /** @var User $userEntity */
-        $userEntity = $this->userService->findOneById($id);
-        if(!$userEntity){
-            return $this->redirectToRoute('friend_all');
-        }
+        $userEntity = $this->userService->findOneById(intval( $id ));
+        if(!$userEntity)
+            return $this->goHome();
 
         if( $this->friendService->acceptInvite( $userEntity ) ) {
                 $this->addFlash('info', self::SUCCESS_ACCEPT);
@@ -82,10 +81,10 @@ class FriendController extends Controller
      */
     public function deleteProcess(int $id ) {
         /** @var User $friend */
-        $friend = $this->userService->findOneById( $id );
-        if(!$friend) {
-            return $this->redirectToRoute('friend_all');
-        }
+        $friend = $this->userService->findOneById( intval( $id ) );
+        if(!$friend)
+            return $this->goHome();
+
 
         if($this->friendService->removeFriend( $friend ) ) {
             $this->addFlash('info', self::SUCCESS_DEL);
@@ -104,5 +103,9 @@ class FriendController extends Controller
     public function allAction() {
         $friends = $this->friendService->findAll();
         return $this->render('friend/all.html.twig', ['friends' => $friends ]);
+    }
+
+    public function goHome() {
+        return $this->redirectToRoute('friend_all');
     }
 }

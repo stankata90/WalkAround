@@ -3,9 +3,6 @@
 namespace WalkAroundBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -39,6 +36,10 @@ class Role
      */
     private $users;
 
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -74,23 +75,6 @@ class Role
         return $this->name;
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getUsers()
-    {
-        return $this->users;
-    }
-
-    /**
-     * @param ArrayCollection $user
-     * @return Role
-     */
-    public function setUser($user)
-    {
-        $this->users[] = $user;
-        return $this;
-    }
 
     /**
      * @return string

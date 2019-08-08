@@ -26,6 +26,7 @@ class UserController extends Controller
     {
         $this->security = $security;
         $this->userService = $userService;
+
     }
 
 
@@ -79,6 +80,7 @@ class UserController extends Controller
                 $this->userService->save( $userEntity );
                 $this->addFlash('info', self::SUCCESS_REG);
                 return $this->redirectToRoute( "homepage");
+
             } catch  ( Exception $e ) {
                 $this->addFlash('error', $e->getMessage() );
                 return $this->render( 'user/register.html.twig', ['form' => $form->createView() ] );
@@ -101,7 +103,6 @@ class UserController extends Controller
 
         $form = $this->createForm( UserEditType::class, $userEntity );
         $form->handleRequest( $request );
-
         return $this->render( 'user/myProfile.html.twig',
             [
                 'form' => $form->createView(),
@@ -117,38 +118,47 @@ class UserController extends Controller
      */
     public function editProfileProcess( Request $request )
     {
-        /**@var User $userEntity */
-        $userEntity = $this->security->getUser();
-        $oldImage = $userEntity->getImage();
-        $currentPass =  $userEntity->getPassword();
-        $form = $this->createForm(UserEditType::class, $userEntity);
-        $form->handleRequest($request);
+        try {
+            /**@var User $userEntity */
+            $userEntity = $this->security->getUser();
+            $oldImage = $userEntity->getImage();
+            $currentPass =  $userEntity->getPassword();
+            $form = $this->createForm(UserEditType::class, $userEntity);
+            $form->handleRequest($request);
+            /** @var User $current */
 
-        /** @var UploadedFile $image */
-        $image = $form['image']->getData();
 
-        if(  $image !== NULL AND !$image->getError() ) {
+            /** @var UploadedFile $image */
+            $image = $form['image']->getData();
 
-            $fileName = md5( uniqid() ) . ".". $image->guessExtension();
-            $image->move(
-                $this->getParameter( 'user_directory'),
-                $fileName
-            );
+            if(  $image !== NULL AND !$image->getError() ) {
 
-            $file =$this->getParameter( 'user_directory') ."/". $oldImage;
+                $fileName = md5( uniqid() ) . ".". $image->guessExtension();
+                $image->move(
+                    $this->getParameter( 'user_directory'),
+                    $fileName
+                );
 
-            if( file_exists( $file ) && $oldImage  )
-                unlink( $file );
+                $file =$this->getParameter( 'user_directory') ."/". $oldImage;
 
-            $userEntity->setImage( $fileName );
-        } else {
-            $userEntity->setImage(  $oldImage );
+                if( file_exists( $file ) && $oldImage  )
+                    unlink( $file );
+
+                $userEntity->setImage( $fileName );
+            } else {
+                $userEntity->setImage(  $oldImage );
+            }
+
+            $this->userService->updateProfile($currentPass, $userEntity);
+
+            $this->addFlash('into', 'Success edit your profile!');
+            return $this->redirectToRoute( 'my_profile');
+
+
+        } catch  ( Exception $e ) {
+            $this->addFlash('error', $e->getMessage() );
+            return $this->redirectToRoute( 'my_profile');
         }
-
-        $this->userService->updateProfile($currentPass, $userEntity);
-
-        $this->addFlash('into', 'Success edit your profile!');
-        return $this->redirectToRoute( 'my_profile');
     }
 
     /**
@@ -170,12 +180,15 @@ class UserController extends Controller
      */
     public function userAction( int $id ) {
         /** @var User $user */
-        $user = $this->userService->findOneById( $id );
+        $user = $this->userService->findOneById( intval( $id ) );
 
         if( !$user )
-          return $this->redirectToRoute('homepage');
-
+          return $this->goHome();
 
         return $this->render('user/user.html.twig', ['user' =>$user] );
+    }
+
+    public function goHome() {
+        return $this->redirectToRoute('homepage');
     }
 }

@@ -15,6 +15,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class Destination
 {
+
     /**
      * @var int
      *

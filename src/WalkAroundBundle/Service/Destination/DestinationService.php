@@ -3,6 +3,7 @@
 
 namespace WalkAroundBundle\Service\Destination;
 
+use DateTime;
 use Symfony\Component\Security\Core\Security;
 use WalkAroundBundle\Entity\Destination;
 use WalkAroundBundle\Entity\DestinationLiked;
@@ -39,12 +40,14 @@ class DestinationService implements DestinationServerInterface
     {
         /** @var Region $regionEntity */
         $regionEntity = $this->regionRepository->find( $destination->getRegionId() );
+        if ( !$regionEntity )
+            return false;
 
         $destination
             ->setCountSeen(0)
             ->setCountVisited(0)
             ->setCountLiked(0)
-            ->setAddedOn( new \DateTime('now'))
+            ->setAddedOn( new DateTime('now'))
             ->setAddedUser( $this->security->getUser() )
             ->setRegion( $regionEntity );
 

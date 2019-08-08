@@ -9,6 +9,7 @@ use WalkAroundBundle\Service\Destination\DestinationServerInterface;
 class DefaultController extends Controller
 {
     private $destinationService;
+
     function __construct( DestinationServerInterface $destination )
     {
         $this->destinationService = $destination;
