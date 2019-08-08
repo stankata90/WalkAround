@@ -3,6 +3,7 @@
 
 namespace WalkAroundBundle\Service\User;
 use DateTime;
+use Exception;
 use WalkAroundBundle\Entity\Role;
 use WalkAroundBundle\Service\Encryption\ArgonEncryptionService;
 use Symfony\Component\Security\Core\Security;
@@ -12,6 +13,11 @@ use WalkAroundBundle\Service\Role\RoleServiceInterface;
 
 class UserService implements UserServiceInterface
 {
+    const AGE_REQ = "Age must be between 10 and 100, only number";
+    const NAME_REQ = "Name must be min 3 and max 50 letters";
+    const SEX_REQ = "Invalid sex";
+    const PASS_REQ = "Password must be between 4 and 20, letters and digits";
+
     private $userRepository;
 
     private $roleService;
@@ -86,5 +92,29 @@ class UserService implements UserServiceInterface
         return $this->userRepository->findAll();
     }
 
+    /**
+     * @param $user
+     * @throws Exception
+     */
+    public function checkRegisterForm($user)
+    {
 
+        if( !ctype_alpha( $user['fullName'] ) OR ( mb_strlen( $user['fullName'] ) < 3 OR mb_strlen( $user['fullName'] ) > 50 ) ) {
+            throw new Exception( self::NAME_REQ );
+        }
+
+        if( !ctype_digit( $user['age']) or ( $user['age'] > 100 &&  $user['age'] < 10 ) ) {
+            throw new Exception( self::AGE_REQ );
+        }
+
+        if( !( $user['sex'] == "male" OR $user['sex'] == "female" )) {
+            throw new Exception( self::SEX_REQ );
+        }
+
+        if( !ctype_alnum($user['password'] ) or !( mb_strlen( $user['password'] ) > 20  OR mb_strlen( $user['password'] ) < 4 )) {
+            throw new Exception( self::PASS_REQ );
+        }
+
+        var_dump( $user);
+    }
 }

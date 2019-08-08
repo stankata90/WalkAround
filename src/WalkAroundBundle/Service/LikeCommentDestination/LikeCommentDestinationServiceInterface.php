@@ -4,6 +4,7 @@
 namespace WalkAroundBundle\Service\LikeCommentDestination;
 
 
+use WalkAroundBundle\Entity\CommentDestination;
 use WalkAroundBundle\Entity\CommentDestinationLiked;
 
 interface LikeCommentDestinationServiceInterface
@@ -14,5 +15,5 @@ interface LikeCommentDestinationServiceInterface
 
     public function finOne( int $likeId );
 
-    public function addLike(int $comId );
+    public function addLike( CommentDestination $comment );
 }

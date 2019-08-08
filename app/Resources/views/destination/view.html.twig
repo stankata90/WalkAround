@@ -101,7 +101,7 @@
                                 </td>
                                 <td>
                                     {{ comment.addedOn|date("F jS \\a\\t g:ia") }}
-                                    {% if app.user and comment.likes|filter( v => v.userId == app.user.getId )|length  == 0 %}
+                                    {% if app.user and comment.likes|filter( b => b.userId == app.user.getId )|length  == 0 %}
                                         <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:comment.id})  }}">Like({{ comment.likes|length }})</a>
                                     {% else %}
                                         <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ comment.likes|length }}</span> </span>
@@ -130,10 +130,10 @@
 
                                                 </td>
                                                 <td>
-                                                    {% if app.user and re.likes|filter( v => v.userId == app.user.getId )|length  == 0 %}
+                                                    {% if app.user and re.likes|filter( s => s.userId == app.user.getId )|length  == 0 %}
                                                         <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:re.id})  }}">Like({{ re.likes|length }})</a>
                                                     {% else %}
-                                                        <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ comment.likes|length }}</span> </span>
+                                                        <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ re.likes|length }}</span> </span>
                                                     {% endif %}
                                                 </td>
                                             </tr>

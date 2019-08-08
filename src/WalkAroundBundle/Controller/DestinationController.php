@@ -25,8 +25,6 @@ class DestinationController extends Controller
     const SUCCESS_ADD = 'Success added destination!';
     const SUCCESS_UPDATE = 'Success updated destination!';
     const SUCCESS_DELETE = 'Success deleted destination!';
-    const SUCCESS_COMMENT = 'Success comment destination!';
-    const SUCCESS_LIKE = 'Success liked destination!';
 
     private $destinationService;
     private $regionService;
@@ -250,103 +248,6 @@ class DestinationController extends Controller
             'comments' => $this->commentService->getCommentByDestination( $destinationEntity ),
             're' => $comment
         ] );
-    }
-
-
-    /**
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @Route("destination/{id}/like", name="destination_like", methods={"GET"}, requirements={"id"="\d+"} )
-     *
-     */
-    public function likeProcess(int $id) {
-        $destinationEntity = $this->destinationService->findOneById( $id ) ;
-
-        if(!$destinationEntity)
-            return $this->goHome();
-
-
-        if( $this->destinationLikedService->like( $destinationEntity, $this->getUser() ) ) {
-            $destinationEntity->setCountLiked( $destinationEntity->getCountLiked()+1 );
-            $this->destinationService->update( $destinationEntity );
-            $this->addFlash('info', self::SUCCESS_LIKE);
-        }
-
-        return $this->redirectToRoute( 'destination_view', ['id' => $id] );
-    }
-
-    /**
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     *
-     * @Route("destination/{id}/unlike", name="destination_unlike", methods={"GET"}, requirements={"id"="\d+"} )
-     * @param int $id
-     * @return RedirectResponse
-     */
-    public function unlikeProcess(int $id) {
-
-        $destinationEntity = $this->destinationService->findOneById( $id ) ;
-
-        if(!$destinationEntity)
-            return $this->goHome();
-
-        if( $this->destinationLikedService->unlike( $destinationEntity, $this->getUser() ) ) {
-            $destinationEntity->setCountLiked( $destinationEntity->getCountLiked()-1 );
-            $this->destinationService->update( $destinationEntity );
-        }
-        return $this->redirectToRoute( 'destination_view', ['id' => $id] );
-    }
-
-    /**
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @Route("destination/{id}/cemment/new", name="destination_comment_new", methods={"POST"}, requirements={"id"="\d+"})
-     * @param Request $request
-     *
-     * @param $id
-     * @return RedirectResponse
-     */
-    public function commentProcess(Request $request, $id) {
-        $destinationEntity = $this->destinationService->findOneById( $id );
-
-        if(!$destinationEntity)
-            return $this->goHome();
-
-        $commentEntity = new CommentDestination();
-        $form = $this->createForm( CommentCreateType::class, $commentEntity);
-        $form->handleRequest( $request );
-
-        if($commentEntity->getIdCommentRe() != null ) {
-
-            $rr = $this->commentService->getCommentById( intval( $commentEntity->getIdCommentRe()) );
-
-            if( intval( $rr->getIdCommentRe() ) )
-                return $this->redirectToRoute('destination_view', ['id' => $id]);
-
-
-                $commentEntity->setCommentsRe( $rr );
-            }
-
-        if( $this->commentService->writeComment($commentEntity, $destinationEntity) ) {
-                $this->addFlash('info', self::SUCCESS_COMMENT);
-            return $this->redirectToRoute('destination_view', ['id' => $id]);
-        }
-
-        return $this->redirectToRoute('homepage');
-    }
-
-    /**
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @Route("commentDestination/{id}/liked", name="liked_comment_destination", methods={"GET"}, requirements={"id"="\d+"})
-     * @param int $id
-     * @return RedirectResponse
-     */
-    public function likeComment( int $id ) {
-        $commentEntity = $this->commentService->getCommentById( $id );
-
-        if(!$commentEntity)
-            return $this->goHome();
-
-        $this->likeCommentService->addLike( $id );
-
-        return $this->redirectToRoute('destination_view', ['id' => $commentEntity->getDestinationId()] );
     }
 
     function goHome() {

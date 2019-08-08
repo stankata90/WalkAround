@@ -7,6 +7,7 @@ namespace WalkAroundBundle\Service\LikeCommentDestination;
 
 use DateTime;
 use Symfony\Component\Security\Core\Security;
+use WalkAroundBundle\Entity\CommentDestination;
 use WalkAroundBundle\Entity\CommentDestinationLiked;
 use WalkAroundBundle\Entity\User;
 use WalkAroundBundle\Repository\CommentDestinationLikedRepository;
@@ -19,7 +20,6 @@ class LikeCommentDestinationService implements LikeCommentDestinationServiceInte
     /**
      * @var CommentDestinationServiceInterface
      */
-    private $commentService;
 
     public function __construct(
         CommentDestinationLikedRepository $commentDestinationLikedRepository,
@@ -46,16 +46,22 @@ class LikeCommentDestinationService implements LikeCommentDestinationServiceInte
         return false;
     }
 
-    public function addLike( int $comId )
+    public function addLike(CommentDestination $commentDestination )
     {
 
-        $commentEntity = $this->commentService->getCommentById( $comId );
+
+//        $commentEntity = $this->commentService->getCommentById( $commentDestination );
+
+
+
+
+
         /** @var User $userEntity */
         $userEntity = $this->security->getUser();
 
         $likeEntity = new CommentDestinationLiked();
         $likeEntity
-            ->setCommentDestination( $commentEntity )
+            ->setCommentDestination( $commentDestination )
             ->setAddUser( $userEntity )
             ->setAddedOn( new DateTime('now'));
 

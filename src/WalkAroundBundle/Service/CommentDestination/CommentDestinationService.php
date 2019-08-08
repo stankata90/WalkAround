@@ -15,17 +15,17 @@ use WalkAroundBundle\Service\LikeCommentDestination\LikeCommentDestinationServic
 
 class CommentDestinationService implements CommentDestinationServiceInterface
 {
-    private $commentRepo;
+    private $commentRepository;
     private $security;
     private $likeService;
 
     public function __construct(
-        CommentDestinationRepository $commentRepo,
+        CommentDestinationRepository $commentRepository,
         Security $security,
         LikeCommentDestinationServiceInterface $likeService
     )
     {
-        $this->commentRepo = $commentRepo;
+        $this->commentRepository = $commentRepository;
         $this->security = $security;
         $this->likeService = $likeService;
     }
@@ -39,7 +39,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
             ->setAddedOn( new DateTime('now'))
             ->setAddedUser( $current );
 
-        if( $this->commentRepo->insert( $comment ) )
+        if( $this->commentRepository->insert( $comment ) )
             return true;
 
         return false;
@@ -47,7 +47,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
 
     public function removeComment(CommentDestination $comment): bool
     {
-        if( $this->commentRepo->delete( $comment ) )
+        if( $this->commentRepository->delete( $comment ) )
             return true;
 
         return false;
@@ -57,9 +57,10 @@ class CommentDestinationService implements CommentDestinationServiceInterface
      * @param int $id
      * @return CommentDestination|null|object
      */
-    public function getCommentById(int $id): ?CommentDestination
+    public function getCommentById( int $id): ?CommentDestination
     {
-        return $this->commentRepo->find($id);
+
+        return $this->commentRepository->find($id);
     }
 
     /**
@@ -68,7 +69,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
      */
     public function getCommentByAuthor(User $author): ?CommentDestination
     {
-        return $this->commentRepo->find( $author );
+        return $this->commentRepository->find( $author );
     }
 
     /**
@@ -77,7 +78,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
      */
     public function getCommentByAuthorId(int $authorId): ?CommentDestination
     {
-        return $this->commentRepo->findOneBy(['addedBy' => $authorId] );
+        return $this->commentRepository->findOneBy(['addedBy' => $authorId] );
     }
 
     /**
@@ -86,7 +87,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
      */
     public function getCommentByDestination(Destination $destination)
     {
-        return $this->commentRepo->findOneByDestination( $destination );
+        return $this->commentRepository->findOneByDestination( $destination );
     }
 
     /**
@@ -95,7 +96,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
      */
     public function getCommentByDestinationId(int $id): ?CommentDestination
     {
-        return $this->commentRepo->findOneBy(['destination_id' => $id] );
+        return $this->commentRepository->findOneBy(['destination_id' => $id] );
     }
 
     /**
@@ -104,7 +105,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
      */
     public function geCommentByReId( int $reId ): ?CommentDestination
     {
-        return $this->commentRepo->findOneBy(['idCommentRe' => $reId ] );
+        return $this->commentRepository->findOneBy(['idCommentRe' => $reId ] );
     }
 
 
@@ -147,7 +148,7 @@ class CommentDestinationService implements CommentDestinationServiceInterface
      */
     public function getCommentsByDestination(Destination $destination)
     {
-        return $this->commentRepo->findBy(['destinationId'=> $destination->getId()]);
+        return $this->commentRepository->findBy(['destinationId'=> $destination->getId()]);
     }
 
 }

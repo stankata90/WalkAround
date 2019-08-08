@@ -73,7 +73,12 @@ class UserController extends Controller
 
                 $userEntity = new User();
                 $form = $this->createForm( UserRegisterType::class, $userEntity );
+
+
+
                 $form->handleRequest( $request );
+                $this->userService->checkRegisterForm( $request->request->get('user') );
+
                 $fileName = md5( uniqid() ) . ".png";
                 copy($this->getParameter('user_directory')."/avatar.png", $this->getParameter('user_directory') ."/". $fileName);
                 $userEntity->setImage($fileName);

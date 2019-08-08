@@ -12,4 +12,5 @@ interface UserServiceInterface
     public function updateProfile( string $currentPassword, User $newUser) : bool;
     public function findOneById( int $id ) : ?object;
     public function findAll();
+    public function checkRegisterForm( $user );
 }
