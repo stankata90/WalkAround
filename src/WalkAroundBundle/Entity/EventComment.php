@@ -3,9 +3,6 @@
 namespace WalkAroundBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -65,7 +62,7 @@ class EventComment
     /**
      * @var int
      *
-     * @ORM\Column(name="idReComment", type="integer")
+     * @ORM\Column(name="idReComment", type="integer", nullable=true)
      */
     private $idReComment;
 

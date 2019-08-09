@@ -2,7 +2,8 @@
 {% set events =
     {
         'countNewFriend': app.user.friends|filter( v => v.friendship.acceptedOn == null and v.friendship.acceptedId == app.user.getId )|length,
-        'countNewMail': app.user.receivedMessages|filter(v => v.seenOn == null  )|length
+        'countNewMail': app.user.receivedMessages|filter(v => v.seenOn == null  )|length,
+        'countNewEvent': app.user.eventsdestinations|filter( v => v.accepted is null  and  v.event.status == 0 )|length
     }
 %}
 {% endif %}
@@ -30,6 +31,8 @@
 
     <body>
 
+
+
         <div class="container body-container">
 
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -50,12 +53,19 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Events
+                                {% if events.countNewEvent > 0 %}
+                                    <span class="badge badge-danger badge-pill">{{ events.countNewEvent }}</span>
+                                {% endif %}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Active</a>
-                                <a class="dropdown-item" href="#">Cmpleted</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
+
+                                {%  for invitedEvent in app.user.eventsdestinations|filter( v => v.accepted is null  and  v.event.status == 0 ) %}
+                                    <a class="dropdown-item" href="{{ path('event_view',{id:invitedEvent.event.id}) }}"><span class="badge badge-info badge-pill">new</span> invitation to event from ( <b >{{  invitedEvent.event.addUser.fullName  }}</b> )</a>
+                                {% endfor %}
+
+                                {%  for invitedEvent in app.user.eventsdestinations|filter( v => v.accepted is not null  and  v.event.status == 0 ) %}
+                                    <a class="dropdown-item" href="{{ path('event_view',{id:invitedEvent.event.id}) }}">{{  invitedEvent.event.addUser.fullName  }} (<b>{{  invitedEvent.event.destination.name  }} {{  invitedEvent.event.eventOn|date('d-m-Yг.')  }}</b>)</a>
+                                {% endfor %}
                             </div>
                         </li>
                         {% endif %}
@@ -136,7 +146,7 @@
                 <div id="main" class="col-sm-12 mt-4">
                     <div class="album py-2 px-2 bg-light">
 
-                            <div class="container">
+                            <div class="container border-bottom">
                                 <div class="row mx-3 my-3">
                                     <h3>
                                         {% block page_title %}{% endblock %}
@@ -150,8 +160,6 @@
 
                                 </div>
                             </div>
-
-                        <hr />
 
                         {% block main %}
 

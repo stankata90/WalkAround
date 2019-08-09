@@ -8,19 +8,28 @@
 
      {% block page_button %}
          {% if event.addUser.getid == app.user.getId and event.status == 0 %}
+
              <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-danger" >Drop Event</a>
              <a href="{{ path('event_end_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >End Of Event</a>
+
          {% elseif event.status == 0 %}
+
              <a href="{{ path('event_leave_process', {id:event.id}) }}" class="btn btn-sm btn-outline-danger" >Leave Event</a>
-             <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >Accepted Event</a>
+
+             {% if app.user.eventsdestinations|filter( v => v.event.id == event.id and v.accepted is not null )|length == 0 %}
+                <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >Accepted Event</a>
+             {% endif %}
+
          {% else %}
+
             <small><b>finished on {{ event.endOn|date("F jS \\a\\t g:ia") }}</b></small>
+
          {% endif %}
      {% endblock %}
 
 {% block main %}
     <div class="container">
-        <div class="row">
+        <div class="row ">
 {#            {{ event.destination.name }} - {{ event.eventOn|date("F jS \\a\\t g:ia") }}#}
             <div class="col-3">
                 <h5>Destination</h5>
@@ -35,9 +44,100 @@
                 <br />
 
             </div>
-            <div class="col-6">
-                <h5>Comments</h5>
+            <div class="col-6 bg-white">
+
+{#                <i>comments:</i>#}
+{#                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////#}
+                {% if event.eventComments|length > 0 %}
+                    <div class="container col-12">
+                        <div class="well col-12">
+
+                            {%  for comment in event.eventComments|sort|reverse %}
+
+                                {% if comment.idrecomment == null  %}
+                                    <hr />
+                                    <table class="col-12">
+                                        <tr>
+                                            <td style="width: 1px;">
+                                                {% set bgavatar = asset('uploads/images/user/') ~ comment.addUser.image %}
+                                                <div class="commentAvatar img-thumbnail card-img-top" style="background-image: url('{{ bgavatar }}');" >
+                                                </div>
+                                                {#                                    <img src="{{ asset('uploads/images/user/' ~ comment.addedUser.image) }}" width="100" alt=""/>#}
+                                            </td>
+                                            <td>
+                                                <small><a href="{{ path('user_profile', {id:comment.addUser.getid}) }}">{{ comment.addUser.username }}</a> {{ comment.content }}</small>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                            </td>
+                                            <td>
+                                                <small>{{ comment.addedOn|date("m/d/Y") }}</small>
+                                                {#
+                                                   {% if app.user and comment.likes|filter( b => b.userId == app.user.getId )|length  == 0 %}
+                                                       <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:comment.id})  }}">Like({{ comment.likes|length }})</a>
+                                                   {% else %}
+                                                       <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ comment.likes|length }}</span> </span>
+                                                   {% endif %}
+                                                   <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_view', {id:destination.id, comment:comment.id}) }}">Reply</a>
+                                                 #}
+                                            </td>
+
+                                        </tr>
+
+                                        {%  for re in comment.recomments %}
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    <hr />
+
+                                                    <table class="well">
+                                                        <tr>
+                                                            <td>
+                                                                {% set bgavatarre = asset('uploads/images/user/') ~ re.addUser.image %}
+                                                                <div class="commentAvatar img-thumbnail card-img-top" style="background-image: url('{{ bgavatarre }}');" >
+                                                                </div>
+                                                                {#                                                     <img src="{{ asset('uploads/images/user/' ~ re.addedUser.image) }}" width="50" alt=""/></td>#}
+                                                            <td  class=" align-text-top ">{{ re.content }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+
+                                                            </td>
+                                                            <td>
+                                                                {#
+                                                                {% if app.user and re.likes|filter( s => s.userId == app.user.getId )|length  == 0 %}
+                                                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:re.id})  }}">Like({{ re.likes|length }})</a>
+                                                                {% else %}
+                                                                    <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ re.likes|length }}</span> </span>
+                                                                {% endif %}
+                                                                   #}
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                {% endif %}
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+
+
+
+
+
+
+
+
+
             </div>
+
             <div class="col-3">
                 <h5>Invited Friends</h5>
                 {% for invited in event.eventUsers %}

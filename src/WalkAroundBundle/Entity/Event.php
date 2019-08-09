@@ -298,7 +298,7 @@ class Event
     /**
      * @return int
      */
-    public function getStatus(): int
+    public function getStatus()
     {
         return $this->status;
     }
@@ -306,7 +306,7 @@ class Event
     /**
      * @param int $status
      */
-    public function setStatus(int $status): void
+    public function setStatus( $status)
     {
         $this->status = $status;
     }
