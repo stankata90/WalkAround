@@ -46,6 +46,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('users') }}">Users</a>
                         </li>
+                        {% if app.user %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Events
@@ -57,6 +58,7 @@
                                 <a class="dropdown-item" href="#">Something else here</a>
                             </div>
                         </li>
+                        {% endif %}
                     </ul>
                     <ul class="navbar-nav navbar-right ">
                         {% if app.user %}

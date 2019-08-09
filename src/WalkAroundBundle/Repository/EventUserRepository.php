@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\EventUser;
 
 /**
@@ -20,4 +21,35 @@ class EventUserRepository extends EntityRepository
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( EventUser::class ) : $class );
     }
+
+
+    public function insert( EventUser $evenUser ) {
+        try{
+            $this->_em->persist( $evenUser );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function update( EventUser $evenUser ) {
+
+        try{
+            $this->_em->merge( $evenUser );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function delete( EventUser $evenUser ) {
+        try{
+            $this->_em->remove( $evenUser );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+
 }

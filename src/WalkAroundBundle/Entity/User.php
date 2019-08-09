@@ -524,6 +524,7 @@ class User implements UserInterface
         return $stringRoles;
     }
 
+
     /**
      * @param Role $role
      * @return User

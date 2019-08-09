@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Event : {{ event.destination.name }}
+{% endblock %}
+
+{% block page_title %}View Event{% endblock %}
+
+     {% block page_button %}
+         {% if event.addUser.getid == app.user.getId and event.status == 0 %}
+             <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-danger" >Drop Event</a>
+             <a href="{{ path('event_end_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >End Of Event</a>
+         {% elseif event.status == 0 %}
+             <a href="{{ path('event_leave_process', {id:event.id}) }}" class="btn btn-sm btn-outline-danger" >Leave Event</a>
+             <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >Accepted Event</a>
+         {% else %}
+            <small><b>finished on {{ event.endOn|date("F jS \\a\\t g:ia") }}</b></small>
+         {% endif %}
+     {% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+{#            {{ event.destination.name }} - {{ event.eventOn|date("F jS \\a\\t g:ia") }}#}
+            <div class="col-3">
+                <h5>Destination</h5>
+                <a href="{{ path('destination_view', {id:event.destination.id}) }}">
+                    <img class="img-thumbnail" src="{{ asset('uploads/images/destination/' ~ event.destination.image ) }}" alt="">
+                </a>
+                <small><b>by</b> {{ event.addUser.fullName }}</small>
+                <small><b>invited</b> {{ event.eventUsers|length }} friends.</small>
+                <small><b>name</b> {{ event.destination.name }}</small>
+                <br/>
+                <small><b>expires</b> {{ event.eventOn|date("F jS \\a\\t g:ia") }}</small>
+                <br />
+
+            </div>
+            <div class="col-6">
+                <h5>Comments</h5>
+            </div>
+            <div class="col-3">
+                <h5>Invited Friends</h5>
+                {% for invited in event.eventUsers %}
+                    <div class="container col-12 p-0 m-0">
+                        <div class="row py-1">
+
+                            <div class="col-4 pr-1" >
+                                {% set avatar = asset('uploads/images/user/') ~ invited.user.image %}
+                                <div class="avatar img-thumbnail card-img-top" style="background: url('{{ avatar }}') no-repeat center; background-size: cover; display: inline-block;  width: 60px; height: 60px; " >
+                                </div>
+
+                            </div>
+                            <div class="col-8 bold p-auto pl-0 ml-0 m-auto text-left ">
+                                <a href="{{ path('user_profile', {id:invited.user.id }) }}">
+                                    {% if invited.accepted %}
+                                    <small><b>{{ invited.user.fullName }}</b></small>
+                                    {% else %}
+                                        <small>{{ invited.user.fullName }}</small>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}
+

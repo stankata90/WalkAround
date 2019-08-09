@@ -8,7 +8,13 @@
 
  {% if app.user and app.user.id == destination.addedBy %}
     {% block page_button %}
-        <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
+
+        {% if app.user and ( destination.id == app.user.getId  or "ROLE_ADMIN"  in app.user.roles ) %}
+            <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
+        {% endif %}
+        {% if app.user %}
+            <a class="btn btn-sm btn-outline-secondary" href="{{ path('event_create' ,{id:destination.id} ) }}" >New Event</a>
+        {% endif %}
     {% endblock %}
  {% endif %}
 
@@ -58,7 +64,6 @@
 
                 <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_edit' ,{id:destination.id} ) }}" >Edit</a>
                                 {% if destinationLiked|length == 0 or destinationLiked[0].destinationId != destination.id and destinationLiked[0].userId != app.user.id %}
                                     <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_like' ,{id:destination.id} ) }}" >Like</a>
                                 {% else %}

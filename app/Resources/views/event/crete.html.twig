@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Edit
+{% endblock %}
+
+{% block page_title %}Event Create{% endblock %}
+
+{% block page_button %}
+
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="row col-12">
+
+        <div class="col-4">
+            <a href="{{ path('destination_view', {id:dest.id}) }}" ><h5>{{ dest.name }}</h5></a>
+            <a href="{{ path('destination_view', {id:dest.id}) }}" ><img class="avatar img-thumbnail card-img-top" src="{{ asset('uploads/images/destination/' ~  dest.image ) }}" alt="" /></a>
+            <small>{{ dest.description }}</small>
+            <hr />
+
+
+        </div>
+
+        <div class="col-8">
+
+
+
+            {{ form_row(form._token) }}
+
+            <form class="form-horizontal" method="post">
+
+                <div class="form-group">
+                    <label class="col-sm-12 control-label" for="date">Date of the event</label>
+                    <div class="col-sm-12 ">
+                        <input class="form-control" id="date"  name="event[eventOn]" value="" required type="datetime-local">
+                    </div>
+                </div>
+                <hr />
+
+                <div class="form-group">
+                    <label class="col-sm-12 control-label" for="date">Invitations to the event</label>
+                    <div class="col-sm-12 ">
+
+                        {% for friend in friends %}
+                            <div class="container">
+                                <div class="row justify-content-center align-items-center" >
+                                    <label class=" row justify-content-center align-items-center" for="user_{{ friend.friendUser.id }}">
+                                        <span class="col-4" >
+                                            <img class="avatar img-thumbnail card-img-top" src="{{ asset('uploads/images/user/' ~ friend.friendUser.image )  }}" alt="" />
+                                        </span>
+
+                                        <span  class="col-1">
+                                            <input type="checkbox" class="form-control" id="user_{{ friend.friendUser.id }}"  name="event[eventUsers][]" value="{{ friend.friendUser.id }}" >
+                                        </span>
+
+                                        <span  class="col-7 text-left border">
+                                            {{ friend.friendUser.fullName }}
+                                        </span>
+                                    </label>
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12 col-sm-offset-4 mr-auto">
+                        <a class="btn btn-default" href="{{ path('homepage') }}">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Create Event</button>
+                    </div>
+                </div>
+
+                {{  form_row(form._token) }}
+            </form>
+
+        </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -19,6 +19,7 @@ use WalkAroundBundle\Service\Destination\DestinationServerInterface;
 use WalkAroundBundle\Service\DestinationLiked\DestinationLikedServiceInterface;
 use WalkAroundBundle\Service\LikeCommentDestination\LikeCommentDestinationServiceInterface;
 use WalkAroundBundle\Service\Region\RegionServiceInterface;
+use WalkAroundBundle\Service\User\UserServiceInterface;
 
 class DestinationController extends Controller
 {
@@ -26,6 +27,7 @@ class DestinationController extends Controller
     const SUCCESS_UPDATE = 'Success updated destination!';
     const SUCCESS_DELETE = 'Success deleted destination!';
 
+    private $userService;
     private $destinationService;
     private $regionService;
     private $destinationLikedService;
@@ -33,6 +35,7 @@ class DestinationController extends Controller
     private $likeCommentService;
 
     public function __construct(
+        UserServiceInterface $userService,
         DestinationServerInterface $destinationService,
         RegionServiceInterface $regionService,
         DestinationLikedServiceInterface $destinationLikedService,
@@ -40,6 +43,7 @@ class DestinationController extends Controller
         LikeCommentDestinationServiceInterface $likeCommentService
     )
     {
+        $this->userService = $userService;
         $this->destinationService = $destinationService;
         $this->regionService = $regionService;
         $this->destinationLikedService = $destinationLikedService;
@@ -134,7 +138,7 @@ class DestinationController extends Controller
         if(!$destinationEntity)
             return $this->goHome();
 
-        if( $this->getUser()->getId() != $destinationEntity->getAddedBy() ) {
+        if( $this->getUser()->getId() != $destinationEntity->getAddedBy()  and !$this->userService->isAdmin() ) {
             return $this->redirectToRoute('homepage' );
         }
 
@@ -164,7 +168,7 @@ class DestinationController extends Controller
         if(!$destinationEntity)
             return $this->goHome();
 
-        if( $this->getUser()->getId() != $destinationEntity->getAddedBy() ) {
+        if( $this->getUser()->getId() != $destinationEntity->getAddedBy() and !$this->userService->isAdmin() ) {
             return $this->redirectToRoute('homepage' );
         }
 
@@ -217,6 +221,7 @@ class DestinationController extends Controller
 
         if(!$destinationEntity)
             return $this->goHome();
+
 
         $this->destinationService->remove( $destinationEntity );
         $this->addFlash('info', self::SUCCESS_DELETE);

@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\Event;
 
 /**
@@ -20,4 +21,48 @@ class EventRepository extends EntityRepository
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( Event::class ) : $class );
     }
+
+
+    public function insert( Event $event ) {
+        try{
+            $this->_em->persist( $event );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function update( Event $event ) {
+
+        try{
+            $this->_em->merge( $event );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function delete( Event $event ) {
+        try{
+            $this->_em->remove( $event );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+
+   public function findOneByNull( Event $event) {
+       $query = $this->createQueryBuilder('event')
+           ->where('event.id = :id')
+           ->andWhere('event.endOn = :n')
+           ->setParameter('id', $event->getId() )
+           ->setParameter('n', NULL)
+           ->getQuery();
+
+       $products = $query->getResult();
+
+       return $products;
+   }
+
 }

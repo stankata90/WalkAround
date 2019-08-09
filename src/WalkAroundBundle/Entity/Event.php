@@ -3,9 +3,6 @@
 namespace WalkAroundBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -68,6 +65,20 @@ class Event
      * @ORM\Column(name="eventOn", type="datetime")
      */
     private $eventOn;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="endOn", type="datetime", nullable=true)
+     */
+    private $endOn;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", type="integer")
+     */
+    private $status;
 
     /**
      * @var ArrayCollection
@@ -172,10 +183,12 @@ class Event
 
     /**
      * @param User $addUser
+     * @return Event
      */
     public function setAddUser($addUser)
     {
         $this->addUser = $addUser;
+        return $this;
     }
 
 
@@ -255,14 +268,49 @@ class Event
     }
 
     /**
-     * @param ArrayCollection $eventUsers
+     * @param ArrayCollection $eventUser
      * @return Event
      */
-    public function setEventUsers($eventUsers)
+    public function setEventUser($eventUser)
     {
-        $this->eventUsers = $eventUsers;
+        $this->eventUsers[] = $eventUser;
         return $this;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEndOn()
+    {
+        return $this->endOn;
+    }
+
+    /**
+     * @param \DateTime $endOn
+     * @return Event
+     */
+    public function setEndOn($endOn )
+    {
+        $this->endOn = $endOn;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param int $status
+     */
+    public function setStatus(int $status): void
+    {
+        $this->status = $status;
+    }
+
 
 
 

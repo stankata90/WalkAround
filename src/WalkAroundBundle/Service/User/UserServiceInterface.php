@@ -21,4 +21,6 @@ interface UserServiceInterface
     public function verifyAge( $age ):bool;
     public function verifySex( $sex ):bool;
     public function verifyPassword( $password ):bool;
+
+    public function isAdmin():bool;
 }

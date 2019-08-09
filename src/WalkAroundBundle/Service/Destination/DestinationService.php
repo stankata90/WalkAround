@@ -13,15 +13,18 @@ use WalkAroundBundle\Repository\DestinationRepository;
 use WalkAroundBundle\Repository\RegionRepository;
 use WalkAroundBundle\Service\CommentDestination\CommentDestinationServiceInterface;
 use WalkAroundBundle\Service\DestinationLiked\DestinationLikedServiceInterface;
+use WalkAroundBundle\Service\User\UserServiceInterface;
 
 class DestinationService implements DestinationServerInterface
 {
+    private $userService;
     private $destinationRepository;
     private $regionRepository;
     private $security;
     private $commentDestinationService;
     private $likedDestinationService;
     function __construct(
+        UserServiceInterface $userService,
         DestinationRepository $destinationRepository,
         RegionRepository $regionRepository,
         Security $security,
@@ -29,6 +32,7 @@ class DestinationService implements DestinationServerInterface
         DestinationLikedServiceInterface $destinationLikedService
     )
     {
+        $this->userService = $userService;
         $this->destinationRepository = $destinationRepository;
         $this->regionRepository = $regionRepository;
         $this->security = $security;
@@ -63,7 +67,8 @@ class DestinationService implements DestinationServerInterface
     {
         /** @var User $currentUser */
         $currentUser = $this->security->getUser();
-        if( $destination->getAddedBy() != $currentUser->getId() ) {
+
+        if( $currentUser->getId() != $destination->getAddedBy() and !$this->userService->isAdmin() ) {
             return false;
         }
 

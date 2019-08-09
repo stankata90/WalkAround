@@ -2,9 +2,6 @@
 
 namespace WalkAroundBundle\Entity;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -57,9 +54,9 @@ class EventUser
     private $user;
 
     /**
-     * @var string
+     * @var \DateTime
      *
-     * @ORM\Column(name="accepted", type="string", length=255, nullable=true)
+     * @ORM\Column(name="accepted", type="datetime", length=255, nullable=true)
      */
     private $accepted;
 
@@ -167,13 +164,13 @@ class EventUser
     /**
      * Set accepted
      *
-     * @param string $accepted
+     * @param \DateTime $date
      *
      * @return EventUser
      */
-    public function setAccepted($accepted)
+    public function setAccepted( $date )
     {
-        $this->accepted = $accepted;
+        $this->accepted = $date;
 
         return $this;
     }
@@ -181,7 +178,7 @@ class EventUser
     /**
      * Get accepted
      *
-     * @return string
+     * @return \DateTime
      */
     public function getAccepted()
     {

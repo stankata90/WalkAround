@@ -5,6 +5,7 @@ namespace WalkAroundBundle\Service\User;
 use DateTime;
 use Exception;
 use Symfony\Component\Form\FormInterface;
+use WalkAroundBundle\Controller\UserController;
 use WalkAroundBundle\Entity\Role;
 use WalkAroundBundle\Form\User\UserRegisterType;
 use WalkAroundBundle\Service\Encryption\ArgonEncryptionService;
@@ -101,7 +102,7 @@ class UserService implements UserServiceInterface
      * @return mixed
      * @throws Exception
      */
-    public function registerProcess($userController, $request, &$form)
+    public function registerProcess(UserController $userController, $request, &$form)
     {
         $userEntity = new User();
 
@@ -177,4 +178,8 @@ class UserService implements UserServiceInterface
     }
 
 
+    public function isAdmin(): bool
+    {
+        return in_array( 'ROLE_ADMIN', $this->security->getUser()->getRoles()) ;
+    }
 }
