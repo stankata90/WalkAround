@@ -16,7 +16,7 @@
                             <a href="{{ path('user_profile', {id:user.id} ) }}">
 
                                 {% set bgavatar = asset('uploads/images/user/') ~ user.image %}
-                                <div class="avatar card-img-top img-thumbnail" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block; min-height: 200px; " >
+                                <div class="avatar card-img-top img-thumbnail" style="background-image: url('{{ bgavatar }}'); height: 200px;" >
                                 </div>
 
                             </a>

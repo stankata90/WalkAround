@@ -153,7 +153,7 @@ class DestinationService implements DestinationServerInterface
             $this->deleteImage( $oldImage, $contr );
             $destEntity->setImage( $fileName );
         } else {
-            $destEntity->setImage( $oldImage );
+            $destEntity->setImage( $oldImage->getImage() );
         }
 
         return $this->update( $destEntity );

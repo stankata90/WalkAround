@@ -165,6 +165,7 @@ class UserService implements UserServiceInterface
             $userEntity->setImage( $oldProfile->getImage() );
         }
 
+
         $this->updateUser($userEntity);
     }
 

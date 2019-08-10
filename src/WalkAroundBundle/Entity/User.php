@@ -2,7 +2,6 @@
 
 namespace WalkAroundBundle\Entity;
 
-//use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;

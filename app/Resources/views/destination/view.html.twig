@@ -24,13 +24,18 @@
 
     <div class="container">
         <div class="row col-12">
-            <div class="p-2 col-6">
-                {% set coverimg = asset('uploads/images/destination/') ~ destination.image %}
-                <div class="avatar img-thumbnail card-img-top" style="background: url('{{ coverimg }}') no-repeat center; background-size: cover; display: block; width: 500px;  height: 500px; " >
-                </div>
+            {% set coverimg = asset('uploads/images/destination/') ~ destination.image %}
+            <div class="destcover img-thumbnail card-img-top " style="background-image: url('{{ coverimg }}'); min-height: 200px;" >
             </div>
-            <div class="text-justify col-6">
-                {{ destination.description }}
+        </div>
+
+            <div class="destDescription row col-12">
+                <i><small><b>Description:</b></small></i>
+                <br />
+                <div class="bg-white border-info">
+                    {{ destination.description }}
+                </div>
+
             </div>
         </div>
 

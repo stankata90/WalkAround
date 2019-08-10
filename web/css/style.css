@@ -5,7 +5,24 @@ a{
 a:hover {
     text-decoration: none;
 }
-.commentAvatar {
+#main , .album {
+    min-height: 600px;
+}
+.profile {
+    height: 280px;
+    width: 100%;
+}
+.avatar{
+    display: block;
+    border-radius: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+
+.comment {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -13,4 +30,12 @@ a:hover {
     background-repeat: no-repeat;
     background-position: center;
     display: block;
+}
+
+.destcover {
+    display: block;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 500px;
 }

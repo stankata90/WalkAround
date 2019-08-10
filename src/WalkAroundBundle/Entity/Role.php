@@ -32,7 +32,7 @@ class Role
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="roles")
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="roles")
      */
     private $users;
 
