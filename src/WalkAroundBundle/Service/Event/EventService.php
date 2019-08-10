@@ -6,14 +6,18 @@ namespace WalkAroundBundle\Service\Event;
 
 use DateTime;
 use Exception;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use WalkAroundBundle\Controller\EventController;
+use WalkAroundBundle\Entity\Destination;
 use WalkAroundBundle\Entity\Event;
+use WalkAroundBundle\Entity\EventComment;
 use WalkAroundBundle\Entity\EventUser;
 use WalkAroundBundle\Entity\User;
 use WalkAroundBundle\Form\Event\EventCreateType;
 use WalkAroundBundle\Repository\EventRepository;
 use WalkAroundBundle\Repository\EventUserRepository;
+use WalkAroundBundle\Service\CommentEvent\CommentEventServiceInterface;
 use WalkAroundBundle\Service\Friend\FriendServiceInterface;
 use WalkAroundBundle\Service\User\UserServiceInterface;
 
@@ -24,13 +28,15 @@ class EventService implements EventServiceInterface
     private $eventUserRepo;
     private $userService;
     private $friendService;
+    private $commentService;
 
     public function __construct(
         Security $security,
         EventRepository $eventRepository,
         UserServiceInterface $userService,
         FriendServiceInterface $friendService,
-        EventUserRepository $eventUserRepo
+        EventUserRepository $eventUserRepo,
+        CommentEventServiceInterface $commentService
     )
     {
         $this->security = $security;
@@ -38,13 +44,14 @@ class EventService implements EventServiceInterface
         $this->userService = $userService;
         $this->friendService = $friendService;
         $this->eventUserRepo = $eventUserRepo;
+        $this->commentService = $commentService;
     }
 
     /**
      * @param EventController $controller
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      * @param $form
-     * @param \WalkAroundBundle\Entity\Destination $destEntity
+     * @param Destination $destEntity
      * @return Event
      * @throws Exception
      */
@@ -56,26 +63,35 @@ class EventService implements EventServiceInterface
         /** @var Event $eventEntity */
         $eventEntity = new Event();
 
+
         $form = $controller->createForm( EventCreateType::class, $eventEntity );
         $form->handleRequest( $request );
 
-        $eventOn = str_replace("T", ' ', $eventEntity->getEventOn()  );
+        $eventOn = $eventEntity->getEventOn();
 
         if( !$this->verifyDate( $eventOn ))
             throw new Exception('Invalid Date');
 
+        try{
+            $date = new DateTime( $eventOn );
+        } catch ( Exception $e) {
+            throw new Exception('Invalid Date');
+        }
 
             $eventEntity
                 ->setDestination($destEntity)
                 ->setAddUser($current)
                 ->setAddedOn(new DateTime('now'))
-                ->setEventOn( new DateTime( $eventOn ) )
+                ->setEventOn( $date )
                 ->setStatus(0)
             ;
 
-
         $this->eventRepo->insert( $eventEntity );
-        $arrUsersId = $request->request->get('event')['eventUsers'];
+
+        $arrUsersId =  ( key_exists('eventUsers', $request->request->get('event') ) ) ? $request->request->get('event')['eventUsers'] : [] ;
+         if ( !count( $arrUsersId ) )
+             throw new Exception('Select friends');
+
         $arrUsersId[] = $current->getId();
 
         foreach ( $arrUsersId as $id ) {
@@ -137,6 +153,37 @@ class EventService implements EventServiceInterface
         return true;
     }
 
+    public function dropProcess( Event $event) {
+
+        $allEventComments = $this->commentService->getCommentsByEvent( $event );
+        foreach ( $allEventComments as $comment ) {
+            /** @var EventComment $comment */
+            if( $comment->getIdCommentRe() != null)
+                $this->commentService->deleteComment( $comment );
+        }
+
+        $allEventComments = $this->commentService->getCommentsByEvent( $event );
+        foreach ( $allEventComments as $comment ) {
+            /** @var EventComment $comment */
+                $this->commentService->deleteComment( $comment );
+        }
+
+
+        $allInvitedUsers = $this->findInvitedUsers( $event );
+
+        foreach ( $allInvitedUsers as $allInvitedUser) {
+
+           $this->eventUserRepo->delete( $allInvitedUser) ;
+        }
+
+        $this->eventRepo->delete( $event );
+
+        return true;
+    }
+
+
+
+
     public function findById(int $id)
     {
         return $this->eventUserRepo->findBy(['eventId' => $id, 'accepted' => null ]);
@@ -144,7 +191,7 @@ class EventService implements EventServiceInterface
 
     public function verifyDate($date)
     {
-        return (DateTime::createFromFormat('Y-m-d H:i', $date) !== false);
+        return (DateTime::createFromFormat('Y/m/d H:i', $date) !== false);
     }
 
     /**
@@ -162,6 +209,14 @@ class EventService implements EventServiceInterface
         $current = $this->security->getUser();
 
         return $this->eventUserRepo->findOneBy(['eventId' => $id, 'userId' => $current->getId()]);
+    }
+
+    /**
+     * @param Event $event
+     * @return EventUser[]|null
+     */
+    public function findInvitedUsers( Event $event ) :?array {
+        return $this->eventUserRepo->findBy(['eventId' => $event->getId()]);
     }
 
 

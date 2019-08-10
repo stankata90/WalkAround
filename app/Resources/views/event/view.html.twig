@@ -9,7 +9,7 @@
      {% block page_button %}
          {% if event.addUser.getid == app.user.getId and event.status == 0 %}
 
-             <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-danger" >Drop Event</a>
+             <a href="{{ path('event_drop_process', {id:event.id}) }}" class="btn btn-sm btn-outline-danger" >Drop Event</a>
              <a href="{{ path('event_end_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >End Of Event</a>
 
          {% elseif event.status == 0 %}
@@ -30,7 +30,6 @@
 {% block main %}
     <div class="container">
         <div class="row ">
-{#            {{ event.destination.name }} - {{ event.eventOn|date("F jS \\a\\t g:ia") }}#}
             <div class="col-3">
                 <h5>Destination</h5>
                 <a href="{{ path('destination_view', {id:event.destination.id}) }}">
@@ -46,15 +45,19 @@
             </div>
             <div class="col-6 bg-white">
 
-{#                <i>comments:</i>#}
-{#                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////#}
+                <div class="btn-group d-flex justify-content-between align-items-center">
+                    <a class="btn btn-sm btn-outline-secondary" href="#" data-toggle="modal" data-target="#exampleModal">
+                        Add Comment
+                    </a>
+                </div>
+
                 {% if event.eventComments|length > 0 %}
                     <div class="container col-12">
                         <div class="well col-12">
 
                             {%  for comment in event.eventComments|sort|reverse %}
 
-                                {% if comment.idrecomment == null  %}
+                                {% if comment.idcommentre == null  %}
                                     <hr />
                                     <table class="col-12">
                                         <tr>
@@ -62,7 +65,6 @@
                                                 {% set bgavatar = asset('uploads/images/user/') ~ comment.addUser.image %}
                                                 <div class="commentAvatar img-thumbnail card-img-top" style="background-image: url('{{ bgavatar }}');" >
                                                 </div>
-                                                {#                                    <img src="{{ asset('uploads/images/user/' ~ comment.addedUser.image) }}" width="100" alt=""/>#}
                                             </td>
                                             <td>
                                                 <small><a href="{{ path('user_profile', {id:comment.addUser.getid}) }}">{{ comment.addUser.username }}</a> {{ comment.content }}</small>
@@ -73,19 +75,12 @@
                                             </td>
                                             <td>
                                                 <small>{{ comment.addedOn|date("m/d/Y") }}</small>
-                                                {#
-                                                   {% if app.user and comment.likes|filter( b => b.userId == app.user.getId )|length  == 0 %}
-                                                       <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:comment.id})  }}">Like({{ comment.likes|length }})</a>
-                                                   {% else %}
-                                                       <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ comment.likes|length }}</span> </span>
-                                                   {% endif %}
-                                                   <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_view', {id:destination.id, comment:comment.id}) }}">Reply</a>
-                                                 #}
+                                                <a class="btn btn-sm btn-outline-secondary" href="{{ path('event_view', {id:event.id, comment:comment.id}) }}">Reply</a>
                                             </td>
 
                                         </tr>
 
-                                        {%  for re in comment.recomments %}
+                                        {%  for re in comment.commentsre %}
                                             <tr>
                                                 <td></td>
                                                 <td>
@@ -97,23 +92,7 @@
                                                                 {% set bgavatarre = asset('uploads/images/user/') ~ re.addUser.image %}
                                                                 <div class="commentAvatar img-thumbnail card-img-top" style="background-image: url('{{ bgavatarre }}');" >
                                                                 </div>
-                                                                {#                                                     <img src="{{ asset('uploads/images/user/' ~ re.addedUser.image) }}" width="50" alt=""/></td>#}
                                                             <td  class=" align-text-top ">{{ re.content }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-
-                                                            </td>
-                                                            <td>
-                                                                {#
-                                                                {% if app.user and re.likes|filter( s => s.userId == app.user.getId )|length  == 0 %}
-                                                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('liked_comment_destination', {id:re.id})  }}">Like({{ re.likes|length }})</a>
-                                                                {% else %}
-                                                                    <span class="btn btn-sm btn-outline-secondary" >likes <span class="badge badge-dark badge-pill">{{ re.likes|length }}</span> </span>
-                                                                {% endif %}
-                                                                   #}
-
-                                                            </td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -126,16 +105,6 @@
                         </div>
                     </div>
                 {% endif %}
-
-
-
-
-
-
-
-
-
-
             </div>
 
             <div class="col-3">
@@ -168,5 +137,46 @@
 
 
     </div>
+
+
+    <!-- Modal -->
+    <form name="commentForm" action="{{ path('event_comment_new', {id:event.id}) }}" id="commentForm" method="POST">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {%  if re == 0  %}
+                            <h5 class="modal-title" id="exampleModalLabel"> New comment </h5>
+                        {% else %}
+                            <h5 class="modal-title" id="exampleModalLabel"> Reply comment</h5>
+                        {% endif %}
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="message">Content</label>
+                        <textarea name="comment[content]" id="message" class="form-control" rows="6"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Send Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="comment[idCommentRe]" value="{%  if re != 0  %}{{ re }}{% endif %}" />
+        {{ form_row(formComment._token) }}
+    </form>
+
+
+    {%  if re != 0  %}
+        <script>
+            $( document ).ready(function() {
+                $('#exampleModal').modal({show:true});
+            });
+        </script>
+    {% endif %}
+
 {% endblock %}
 

@@ -62,15 +62,15 @@ class EventComment
     /**
      * @var int
      *
-     * @ORM\Column(name="idReComment", type="integer", nullable=true)
+     * @ORM\Column(name="idCommentRe", type="integer", nullable=true)
      */
-    private $idReComment;
+    private $idCommentRe;
 
     /**
      * @var EventComment;
      *
-     * @ORM\ManyToOne(targetEntity="EventComment", inversedBy="reComments")
-     * @ORM\JoinColumn(name="idReComment", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="EventComment", inversedBy="commentsRe")
+     * @ORM\JoinColumn(name="idCommentRe", referencedColumnName="id")
      */
     private $comment;
 
@@ -78,7 +78,7 @@ class EventComment
      * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="EventComment", mappedBy="comment")
      */
-    private $reComments;
+    private $commentsRe;
     /**
      * @var \DateTime
      *
@@ -89,7 +89,7 @@ class EventComment
     public function __construct( )
     {
 
-        $this->reComments = new ArrayCollection();
+        $this->commentsRe = new ArrayCollection();
     }
 
     /**
@@ -215,13 +215,13 @@ class EventComment
     /**
      * Set idCommentRe
      *
-     * @param integer $idReComment
+     * @param integer $idCommentRe
      *
      * @return EventComment
      */
-    public function setIdReComment($idReComment)
+    public function setIdCommentRe($idCommentRe)
     {
-        $this->idReComment = $idReComment;
+        $this->idCommentRe = $idCommentRe;
 
         return $this;
     }
@@ -231,9 +231,9 @@ class EventComment
      *
      * @return int
      */
-    public function getIdReComment()
+    public function getIdCommentRe()
     {
-        return $this->idReComment;
+        return $this->idCommentRe;
     }
 
     /**
@@ -279,18 +279,18 @@ class EventComment
     /**
      * @return ArrayCollection
      */
-    public function getReComments()
+    public function getCommentsRe()
     {
-        return $this->reComments;
+        return $this->commentsRe;
     }
 
     /**
-     * @param ArrayCollection $reComment
+     * @param EventComment $reComment
      * @return EventComment
      */
-    public function setReComments($reComment)
+    public function setCommentsRe($reComment)
     {
-        $this->reComments[] = $reComment;
+        $this->commentsRe[] = $reComment;
         return $this;
     }
 

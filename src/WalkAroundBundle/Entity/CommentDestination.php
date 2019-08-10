@@ -3,9 +3,6 @@
 namespace WalkAroundBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -81,12 +78,12 @@ class CommentDestination
      * @ORM\ManyToOne( targetEntity="CommentDestination", inversedBy="comments")
      * @ORM\JoinColumn( name="idCommentRe", referencedColumnName="id")
      */
-    private $commentsRe;
+    private $comment;
 
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany( targetEntity="CommentDestination", mappedBy="commentsRe")
+     * @ORM\OneToMany( targetEntity="CommentDestination", mappedBy="comment")
      */
     private $comments;
 
@@ -274,18 +271,18 @@ class CommentDestination
     /**
      * @return CommentDestination
      */
-    public function getCommentsRe()
+    public function getComment()
     {
-        return $this->commentsRe;
+        return $this->comment;
     }
 
     /**
-     * @param CommentDestination $commentsRe
+     * @param CommentDestination $comment
      * @return CommentDestination
      */
-    public function setCommentsRe($commentsRe)
+    public function setComment($comment)
     {
-        $this->commentsRe = $commentsRe;
+        $this->comment = $comment;
         return $this;
     }
 
@@ -298,12 +295,12 @@ class CommentDestination
     }
 
     /**
-     * @param ArrayCollection $comment
+     * @param CommentDestination $comments
      * @return CommentDestination
      */
-    public function setComments($comment)
+    public function setComments($comments)
     {
-        $this->comments[] = $comment;
+        $this->comments[] = $comments;
         return $this;
     }
 

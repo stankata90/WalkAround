@@ -5,6 +5,8 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use WalkAroundBundle\Entity\Event;
 use WalkAroundBundle\Entity\EventComment;
 
 /**
@@ -19,5 +21,48 @@ class EventCommentRepository extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( EventComment::class ) : $class );
+    }
+
+    public function insert( EventComment $comment ) {
+        try{
+            $this->_em->persist( $comment );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function update( EventComment $comment ) {
+
+        try{
+            $this->_em->merge( $comment );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+    public function delete( EventComment $comment ) {
+        try{
+            $this->_em->remove( $comment );
+            $this->_em->flush();
+            return true;
+        } catch ( OptimisticLockException $e ) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Event $event
+     * @return EventComment[]
+     */
+    public function findOneByevent( Event $event) {
+        $query = $this->createQueryBuilder('c')
+            ->where('c.eventId = :id')
+            ->setParameter('id', $event->getId())
+            ->getQuery();
+
+        $products = $query->getResult();
+        return $products;
     }
 }

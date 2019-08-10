@@ -10,7 +10,7 @@ use WalkAroundBundle\Entity\User;
 
 interface CommentDestinationServiceInterface
 {
-    public function writeComment( CommentDestination $comment, Destination $destination) :bool;
+    public function writeComment( CommentDestination $comment, Destination $destination);
     public function removeComment( CommentDestination $comment ) :bool;
     public function removeCommentsByDestination(Destination $destination) :bool;
     public function getCommentById( int $id ) :?CommentDestination;

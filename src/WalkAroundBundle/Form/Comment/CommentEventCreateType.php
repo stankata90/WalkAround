@@ -7,9 +7,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use WalkAroundBundle\Entity\CommentDestination;
+use WalkAroundBundle\Entity\EventComment;
 
-class CommentCreateType extends AbstractType
+class CommentEventCreateType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -19,12 +19,13 @@ class CommentCreateType extends AbstractType
                 'data_class' => Null
             ])
         ;
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => CommentDestination::class
+            'data_class' => EventComment::class
         ));
     }
 

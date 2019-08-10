@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use WalkAroundBundle\Entity\CommentDestination;
 use WalkAroundBundle\Entity\Destination;
-use WalkAroundBundle\Form\Comment\CommentCreateType;
+use WalkAroundBundle\Form\Comment\CommentDestCreateType;
 use WalkAroundBundle\Form\Destination\DestinationCreateType;
 use WalkAroundBundle\Form\Destination\DestinationEditType;
 use WalkAroundBundle\Service\CommentDestination\CommentDestinationServiceInterface;
@@ -244,7 +244,7 @@ class DestinationController extends Controller
         $dependence = $this->destinationService->viewDependence( $destinationEntity );
 
         $commentDestinationEntity = new CommentDestination();
-        $formComment = $this->createForm( CommentCreateType::class, $commentDestinationEntity);
+        $formComment = $this->createForm( CommentDestCreateType::class, $commentDestinationEntity);
 
         return $this->render( 'destination/view.html.twig', [
             'destination' => $destinationEntity,

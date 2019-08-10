@@ -77,7 +77,7 @@
                 </div>
             {% endif %}
         </div>
-    </div>
+        </div>
 
     {% if destination.comments|length > 0 %}
         <div class="container col-12">
@@ -93,7 +93,7 @@
                                     {% set bgavatar = asset('uploads/images/user/') ~ comment.addedUser.image %}
                                     <div class="avatar img-thumbnail card-img-top" style="background: url('{{ bgavatar }}') no-repeat center; background-size: cover; display: block; width: 75px;  height: 75px; " >
                                     </div>
-{#                                    <img src="{{ asset('uploads/images/user/' ~ comment.addedUser.image) }}" width="100" alt=""/>#}
+{#                                    <img src="{{ asset('uploads/images/user/' ~ comments.addedUser.image) }}" width="100" alt=""/>#}
                                 </td>
                                 <td>
                                     <small>{{ comment.addedUser.username }}</small>

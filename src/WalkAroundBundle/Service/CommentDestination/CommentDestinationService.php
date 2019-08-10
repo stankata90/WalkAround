@@ -5,6 +5,7 @@ namespace WalkAroundBundle\Service\CommentDestination;
 
 
 use DateTime;
+use Exception;
 use Symfony\Component\Security\Core\Security;
 use WalkAroundBundle\Entity\CommentDestination;
 use WalkAroundBundle\Entity\CommentDestinationLiked;
@@ -30,8 +31,17 @@ class CommentDestinationService implements CommentDestinationServiceInterface
         $this->likeService = $likeService;
     }
 
-    public function writeComment(CommentDestination $comment, Destination $destination): bool
+    /**
+     * @param CommentDestination $comment
+     * @param Destination $destination
+     * @return bool
+     * @throws Exception
+     */
+    public function writeComment(CommentDestination $comment, Destination $destination)
     {
+        if($comment->getContent() == null ) {
+            throw new Exception('Error empty message');
+        }
         /** @var User $current */
         $current = $this->security->getUser();
         $comment
