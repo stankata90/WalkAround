@@ -168,7 +168,6 @@ class EventService implements EventServiceInterface
                 $this->commentService->deleteComment( $comment );
         }
 
-
         $allInvitedUsers = $this->findInvitedUsers( $event );
 
         foreach ( $allInvitedUsers as $allInvitedUser) {
@@ -188,6 +187,12 @@ class EventService implements EventServiceInterface
     {
         return $this->eventUserRepo->findBy(['eventId' => $id, 'accepted' => null ]);
     }
+
+    public function findByDestination( Destination $destination ){
+
+        return $this->eventRepo->findBy(['destinationId' => $destination->getId() ]);
+    }
+
 
     public function verifyDate($date)
     {

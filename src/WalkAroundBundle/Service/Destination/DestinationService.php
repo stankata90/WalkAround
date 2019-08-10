@@ -4,82 +4,181 @@
 namespace WalkAroundBundle\Service\Destination;
 
 use DateTime;
+use Exception;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
+use WalkAroundBundle\Controller\DestinationController;
 use WalkAroundBundle\Entity\Destination;
 use WalkAroundBundle\Entity\DestinationLiked;
-use WalkAroundBundle\Entity\Region;
 use WalkAroundBundle\Entity\User;
+use WalkAroundBundle\Form\Destination\DestinationCreateType;
+use WalkAroundBundle\Form\Destination\DestinationEditType;
 use WalkAroundBundle\Repository\DestinationRepository;
 use WalkAroundBundle\Repository\RegionRepository;
 use WalkAroundBundle\Service\CommentDestination\CommentDestinationServiceInterface;
 use WalkAroundBundle\Service\DestinationLiked\DestinationLikedServiceInterface;
+use WalkAroundBundle\Service\Event\EventServiceInterface;
+use WalkAroundBundle\Service\Region\RegionServiceInterface;
 use WalkAroundBundle\Service\User\UserServiceInterface;
 
 class DestinationService implements DestinationServerInterface
 {
-    private $userService;
-    private $destinationRepository;
-    private $regionRepository;
+    const ERROR_NAME = 'Insert Name !';
+    const ERROR_DESC = 'Insert Description !';
+    const ERROR_IMAGE = 'Select image !';
+    const ERROR_REGION = 'Not exits this region !';
+
     private $security;
-    private $commentDestinationService;
-    private $likedDestinationService;
+    private $userService;
+    private $eventService;
+    private $commentsService;
+    private $likedService;
+    private $regionService;
+
+
+    private $regionRepo;
+    private $destinationRepo;
+
     function __construct(
-        UserServiceInterface $userService,
-        DestinationRepository $destinationRepository,
-        RegionRepository $regionRepository,
         Security $security,
+        UserServiceInterface $userService,
+        EventServiceInterface $eventService,
         CommentDestinationServiceInterface $commentDestinationService,
-        DestinationLikedServiceInterface $destinationLikedService
+        DestinationLikedServiceInterface $destinationLikedService,
+        RegionServiceInterface $regionService,
+
+        RegionRepository $regionRepository,
+        DestinationRepository $destinationRepository
     )
     {
-        $this->userService = $userService;
-        $this->destinationRepository = $destinationRepository;
-        $this->regionRepository = $regionRepository;
         $this->security = $security;
-        $this->commentDestinationService = $commentDestinationService;
-        $this->likedDestinationService = $destinationLikedService;
+        $this->userService = $userService;
+        $this->eventService = $eventService;
+        $this->commentsService = $commentDestinationService;
+        $this->likedService = $destinationLikedService;
+        $this->regionService = $regionService;
+
+        $this->destinationRepo = $destinationRepository;
+        $this->regionRepo = $regionRepository;
     }
 
-    public function save(Destination $destination): bool
+    /**
+     * @param DestinationController $controller
+     * @param Request $request
+     * @param Destination $destEntity
+     * @return bool
+     * @throws Exception
+     */
+    public function createProcess($controller, $request, &$destEntity ): bool
     {
-        /** @var Region $regionEntity */
-        $regionEntity = $this->regionRepository->find( $destination->getRegionId() );
-        if ( !$regionEntity )
-            return false;
+        $destEntity = new Destination();
+        /** @var FormInterface $form */
+        $form = $controller->createForm( DestinationCreateType::class, $destEntity );
+        $form->handleRequest( $request );
 
-        $destination
+        if( !$destEntity->getName() )
+            throw new Exception(self::ERROR_NAME);
+
+        if( !$destEntity->getDescription() )
+            throw new Exception( self::ERROR_DESC);
+
+        if( !$request->files->get('destination')['image'] )
+            throw new Exception(self::ERROR_IMAGE);
+
+        $regionEntity = $this->regionService->getById($destEntity->getRegionId());
+        if ( !$regionEntity )
+            throw new Exception(self::ERROR_REGION);
+
+        /** @var UploadedFile $image */
+        $image = $form['image']->getData();
+
+        if( !$image->getError() == 0 )
+            throw new Exception('Image max size ' . ( (UploadedFile::getMaxFilesize() / 1024 ) /1024 ) ."mb" );
+
+        $fileName = $this->createImage( $image, $controller );
+
+        $destEntity
             ->setCountSeen(0)
             ->setCountVisited(0)
             ->setCountLiked(0)
             ->setAddedOn( new DateTime('now'))
             ->setAddedUser( $this->security->getUser() )
-            ->setRegion( $regionEntity );
+            ->setRegion( $regionEntity )
+            ->setImage( $fileName )
+        ;
 
-        return $this->destinationRepository->insert( $destination );
+        return $this->destinationRepo->insert( $destEntity );
     }
 
-    public function update(Destination $destination): bool
+    /**
+     * @param Destination $destEntity
+     * @param Controller $contr
+     * @param Request $request
+     * @return bool
+     * @throws Exception
+     */
+    public function updateProcess($destEntity, Controller $contr, $request): bool
     {
-        return $this->destinationRepository->update( $destination);
-    }
+        $oldImage = new Destination();
+        $oldImage->setImage( $destEntity->getImage() );
+        /** @var FormInterface $form */
+        $form = $contr->createForm( DestinationEditType::class, $destEntity);
+        $form->handleRequest(  $request );
 
-    public function remove(Destination $destination): bool
-    {
-        /** @var User $currentUser */
-        $currentUser = $this->security->getUser();
+        if( !$destEntity->getName() )
+            throw new Exception(self::ERROR_NAME);
 
-        if( $currentUser->getId() != $destination->getAddedBy() and !$this->userService->isAdmin() ) {
-            return false;
+        if( !$destEntity->getDescription() )
+            throw new Exception( self::ERROR_DESC);
+
+        $regionEntity = $this->regionService->getById($destEntity->getRegionId());
+        if ( !$regionEntity )
+            throw new Exception(self::ERROR_REGION);
+
+        /** @var UploadedFile $image */
+        $image = $form['image']->getData();
+
+        if( $request->files->get('destination')['image'] and !$image->getError() == 0 )
+            throw new Exception('Image max size ' . ( (UploadedFile::getMaxFilesize() / 1024 ) /1024 ) ."mb" );
+
+        if( $request->files->get('destination')['image'] != null  ) {
+            $fileName = $this->createImage( $image, $contr );
+            $this->deleteImage( $oldImage, $contr );
+            $destEntity->setImage( $fileName );
+        } else {
+            $destEntity->setImage( $oldImage );
         }
 
-        $this->commentDestinationService->removeCommentsByDestination( $destination );
-        $this->likedDestinationService->removeLikesByDestination( $destination );
-        $image = 'uploads/images/destination/'.$destination->getImage();
+        return $this->update( $destEntity );
+    }
 
-        if(file_exists( $image ))
-            unlink( $image );
+    public function removeProcess(Destination $destination, $controller ): bool
+    {
 
-        return  $this->destinationRepository->delete($destination);
+        $this->commentsService->removeCommentsByDestination( $destination );
+        $this->likedService->removeLikesByDestination( $destination );
+
+        $this->deleteImage( $destination, $controller );
+
+        $arrAllEvents = $this->findDestinationEvents( $destination );
+
+        foreach ($arrAllEvents as $event) {
+            $this->eventService->dropProcess( $event );
+        }
+
+        return  $this->destinationRepo->delete($destination);
+    }
+    /**
+     * @return array
+     */
+    public function findAll()
+    {
+        return $this->destinationRepo->findAll();
     }
 
     /**
@@ -88,7 +187,8 @@ class DestinationService implements DestinationServerInterface
      */
     public function findOne(Destination $destination): ?Destination
     {
-        return $this->destinationRepository->find( $destination );
+
+        return $this->destinationRepo->find( $destination );
     }
 
     /**
@@ -97,20 +197,28 @@ class DestinationService implements DestinationServerInterface
      */
     public function findOneById(int $id): ?Destination
     {
-        return $this->destinationRepository->findOneBy( [ 'id'=> $id ] );
+        return $this->destinationRepo->findOneBy( [ 'id'=> $id ] );
     }
 
-    public function findAll()
-    {
-        return $this->destinationRepository->findAll();
+    /**
+     * @param Destination $destination
+     * @return mixed
+     */
+    public function findDestinationEvents(Destination $destination) {
+
+        return $this->eventService->findByDestination( $destination);
     }
+
+    public function update(Destination $destination) {
+        return $this->destinationRepo->update( $destination );
+    }
+
 
     public function addSeenCount( Destination $destination ) {
         $destination->setCountSeen($destination->getCountSeen() + 1 );
 
-        $this->destinationRepository->update( $destination );
+        $this->destinationRepo->update( $destination );
     }
-
 
     public function viewDependence(Destination $destination)
     {
@@ -123,10 +231,47 @@ class DestinationService implements DestinationServerInterface
         $destinationLikedEntity = NULL;
 
         if( $currentUser !== NULL )
-            $destinationLikedEntity = $this->likedDestinationService->findLike( $destination, $currentUser );
+            $destinationLikedEntity = $this->likedService->findLike( $destination, $currentUser );
 
         return [
             'destinationLikedEntity' => $destinationLikedEntity
         ];
+    }
+
+    /**
+     * @param Destination $destination
+     * @param DestinationController|Controller $controller
+     * @return bool
+     */
+    public function deleteImage(Destination $destination, $controller ) {
+        $image = $controller->getParameter('destination_directory').'/'.$destination->getImage();
+
+        if(file_exists( $image ))
+            if( unlink( $image ))
+                return true;
+
+            return false;
+    }
+
+    /**
+     * @param UploadedFile $image
+     * @param DestinationController|Controller $controller
+     * @return bool
+     * @throws Exception
+     */
+    public function createImage( UploadedFile $image, $controller ) {
+
+        $fileName = md5( uniqid() ) . ".". $image->guessExtension();
+        try {
+            $image->move(
+                $controller->getParameter('destination_directory'),
+                $fileName
+            );
+
+            return $fileName;
+        } catch ( FileException $e ) {
+
+            throw new Exception( $e->getMessage() );
+        }
     }
 }

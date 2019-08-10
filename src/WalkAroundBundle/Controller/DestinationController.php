@@ -3,7 +3,6 @@
 namespace WalkAroundBundle\Controller;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,6 +50,16 @@ class DestinationController extends Controller
         $this->likeCommentService = $likeCommentService;
     }
 
+    public function createForm($type, $data = null, array $options = [])
+    {
+        return parent::createForm( $type, $data, $options);
+    }
+
+    public function getParameter($name)
+    {
+        return parent::getParameter($name);
+    }
+
     /**
      * @Route("/destinations", name="destination_all", methods={"Get"})
      * @return Response
@@ -85,43 +94,17 @@ class DestinationController extends Controller
      * @return Response
      */
     public function createProcess( Request $request ) {
-
-
         try{
-            $destinationEntity = new Destination();
-            $form = $this->createForm( DestinationCreateType::class, $destinationEntity);
-            $form->handleRequest( $request );
-
-            /** @var UploadedFile $image */
-            $image = $form['image']->getData();
-
-            if( $image->getError() == 0 ) {
-                $fileName = md5( uniqid() ) . ".". $image->guessExtension();
-                $image->move(
-                    $this->getParameter( 'destination_directory'),
-                    $fileName
-                );
-                $destinationEntity->setImage( $fileName );
-            } else{
-
-                throw new \Symfony\Component\Config\Definition\Exception\Exception('Image max size ' . ( (UploadedFile::getMaxFilesize() / 1024 ) /1024 ) ."mb" );
-            }
-
-
-            if( !$this->destinationService->save( $destinationEntity ) )
-                return $this->redirectToRoute('destination_create');
+            /** @var Destination $destEntity */
+            $this->destinationService->createProcess( $this, $request, $destEntity );
 
             $this->addFlash('info', self::SUCCESS_ADD);
-            return  $this->redirectToRoute( 'destination_view', ['id'=>$destinationEntity->getId()]);
+            return  $this->redirectToRoute( 'destination_view', ['id'=>$destEntity->getId()]);
+
         } catch  ( Exception $e ) {
+
             $this->addFlash('error', $e->getMessage() );
-            return $this->render(
-                'destination/create.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'regions' => $this->regionService->getAll()
-                ]
-            );
+            return $this->redirectToRoute('destination_create');
         }
     }
 
@@ -132,21 +115,20 @@ class DestinationController extends Controller
      * @return RedirectResponse|Response
      */
     public function editAction( $id ) {
-        /** @var Destination $destinationEntity */
-        $destinationEntity = $this->getDoctrine()->getRepository( Destination::class)->find( intval( $id ) );
+        /** @var Destination $destEntity */
+        $destEntity = $this->getDoctrine()->getRepository( Destination::class)->find( intval( $id ) );
 
-        if(!$destinationEntity)
+        if(!$destEntity)
             return $this->goHome();
 
-        if( $this->getUser()->getId() != $destinationEntity->getAddedBy()  and !$this->userService->isAdmin() ) {
+        if( $this->getUser()->getId() != $destEntity->getAddedBy() and !$this->userService->isAdmin() )
             return $this->redirectToRoute('homepage' );
-        }
 
         return $this->render(
             'destination/edit.html.twig',
             [
                 'form' => $this->createForm( DestinationEditType::class )->createView( ),
-                'destination' => $destinationEntity,
+                'destination' => $destEntity,
                 'regions' =>$this->regionService->getAll()
             ]
         );
@@ -162,51 +144,26 @@ class DestinationController extends Controller
      */
     public function editProcess( Request $request, $id) {
 
-        /** @var Destination $destinationEntity*/
-        $destinationEntity = $this->getDoctrine()->getRepository(Destination::class)->find( intval( $id ) );
+        /** @var Destination $destEntity */
+        $destEntity = $this->getDoctrine()->getRepository( Destination::class)->find( intval( $id ) );
 
-        if(!$destinationEntity)
+        if(!$destEntity)
             return $this->goHome();
 
-        if( $this->getUser()->getId() != $destinationEntity->getAddedBy() and !$this->userService->isAdmin() ) {
+        if( $this->getUser()->getId() != $destEntity->getAddedBy() and !$this->userService->isAdmin() )
             return $this->redirectToRoute('homepage' );
-        }
-
-        $oldImage = $destinationEntity->getImage();
-        $form = $this->createForm( DestinationEditType::class, $destinationEntity);
-        $form->handleRequest(  $request );
 
         try{
-            /** @var UploadedFile $image */
-            $image = $form['image']->getData();
 
-
-            if(  $image !== NULL AND !$image->getError() ) {
-
-               $fileName = md5( uniqid() ) . ".". $image->guessExtension();
-               $image->move(
-                   $this->getParameter( 'destination_directory'),
-                   $fileName
-               );
-
-                $file =$this->getParameter( 'destination_directory') ."/". $oldImage;
-                if( file_exists( $file ) )
-                    unlink( $file );
-
-               $destinationEntity->setImage( $fileName );
-           } else {
-                $destinationEntity->setImage(  $oldImage );
-            }
-
-            $this->destinationService->update( $destinationEntity );
+            $this->destinationService->updateProcess( $destEntity, $this, $request );
             $this->addFlash('info', self::SUCCESS_UPDATE);
             return  $this->redirectToRoute( 'destination_view',  ['id' => $id] );
 
         } catch ( Exception $e ) {
 
+            $this->addFlash('error', $e->getMessage() );
             return  $this->redirectToRoute( 'destination_edit',  ['id' => $id]  );
         }
-
     }
 
     /**
@@ -222,8 +179,11 @@ class DestinationController extends Controller
         if(!$destinationEntity)
             return $this->goHome();
 
+        if( $this->getUser()->getId() != $destinationEntity->getAddedBy() and !$this->userService->isAdmin() )
+            return $this->goHome();
 
-        $this->destinationService->remove( $destinationEntity );
+
+        $this->destinationService->removeProcess( $destinationEntity, $this );
         $this->addFlash('info', self::SUCCESS_DELETE);
         return $this->redirectToRoute('destination_all');
     }

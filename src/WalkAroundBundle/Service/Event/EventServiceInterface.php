@@ -19,6 +19,7 @@ interface EventServiceInterface
 
     public function findOneById( int $id ):?object;
     public function findById( int $id );
+    public function findByDestination( Destination $destination );
 
     public function findInvitedById($id );
     public function findInvitedUsers( Event $event ) :?array ;
