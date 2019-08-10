@@ -4,10 +4,16 @@
 namespace WalkAroundBundle\Service\User;
 use DateTime;
 use Exception;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use WalkAroundBundle\Controller\DestinationController;
 use WalkAroundBundle\Controller\UserController;
 use WalkAroundBundle\Entity\Region;
 use WalkAroundBundle\Entity\Role;
+use WalkAroundBundle\Form\User\UserEditType;
 use WalkAroundBundle\Form\User\UserRegisterType;
 use WalkAroundBundle\Repository\RegionRepository;
 use WalkAroundBundle\Repository\RoleRepository;
@@ -52,7 +58,118 @@ class UserService implements UserServiceInterface
         $this->regionRepository = $regionRepository;
     }
 
-    public function save(User $user): bool
+    /**
+     * @param Controller|UserController $userController
+     * @param $request
+     * @param $form
+     * @return mixed
+     * @throws Exception
+     */
+    public function registerProcess(Controller $userController, $request, &$form)
+    {
+        $userEntity = new User();
+
+        /** @var FormInterface $form */
+        $form = $userController->createForm( UserRegisterType::class, $userEntity );
+        $arrValidate = $request->request->get("user");
+        $form->handleRequest( $request );
+
+        $this->verifyEmail( $userEntity->getEmail() );
+        $this->verifyName( $userEntity->getFullName() );
+        $this->verifyAge( intval( $userEntity->getAge() ) );
+        $this->verifySex($userEntity->getSex() );
+
+        $this->verifyPassword( $arrValidate['password']['first']);
+        $fileName = md5( uniqid() ) . ".png";
+        copy($userController->getParameter('user_directory')."/avatar.png", $userController->getParameter('user_directory') ."/". $fileName);
+        $userEntity->setImage($fileName);
+
+        $passwordHash = $this->encryption->hash( $userEntity->getPassword() );
+        $userEntity->setPassword( $passwordHash );
+
+        /** @var Role $userRole */
+        if( $this->install() ) {
+            $adminRole = $this->roleService->findOneByName( 'ROLE_ADMIN' );
+            $userEntity->addRole( $adminRole );
+
+        }
+
+        $userRole = $this->roleService->findOneByName( 'ROLE_USER' );
+        $userEntity->addRole( $userRole );
+
+        $userEntity->setAddedOn( new DateTime('now'));
+
+        $this->createUser( $userEntity );
+
+        return true;
+    }
+
+    /**
+     * @param Controller $controller
+     * @param Request $request
+     * @param $form
+     * @throws Exception
+     */
+    public function editProcess(Controller $controller, Request $request, &$form)
+    {
+
+        /**@var User $userEntity */
+        $userEntity = $this->security->getUser();
+        $oldImg = $userEntity->getImage();
+        $oldProfile = new User();
+        $oldProfile
+            ->setEmail( $userEntity->getEmail() )
+            ->setImage( $userEntity->getImage() )
+        ;
+
+        $currentPass =  $userEntity->getPassword();
+
+        /** @var FormInterface $form */
+        $form = $controller->createForm(UserEditType::class, $userEntity);
+        $form->handleRequest($request);
+
+        if( $oldProfile->getEmail() != $userEntity->getEmail() )
+            $this->verifyEmail( $userEntity->getEmail() );
+
+        $this->verifyName( $userEntity->getFullName() );
+
+        $this->verifyAge( intval( $userEntity->getAge() ) );
+
+        $this->verifySex($userEntity->getSex() );
+
+        $arrValidate = $request->request->get("user");
+        $this->verifyPassword( $arrValidate['password']['first']);
+
+        if( $userEntity->getPassword() !== Null  && $userEntity->getPassword() !== $currentPass && !$this->encryption->verify($userEntity->getPassword(), $currentPass) ) {
+            $userEntity->setPassword( $this->encryption->hash( $userEntity->getPassword() ) );
+        } else {
+            $userEntity->setPassword($currentPass);
+        }
+
+        /** @var UploadedFile $image */
+        $image = $form['image']->getData();
+
+
+        if( $request->files->get('user')['image'] and !$image->getError() == 0 )
+            throw new Exception('Image max size ' . ( (UploadedFile::getMaxFilesize() / 1024 ) /1024 ) ."mb" );
+
+
+        if( $request->files->get('user')['image'] != null  ) {
+
+            $fileName = $this->createImage( $image, $controller );
+            $this->deleteImage( $oldProfile, $controller );
+            $userEntity->setImage( $fileName );
+
+        } else {
+
+            $userEntity->setImage( $oldProfile->getImage() );
+        }
+
+        $this->updateUser($userEntity);
+    }
+
+
+    public function createUser(User $user): bool
     {
 
         return $this->userRepository->insert( $user );
@@ -63,13 +180,7 @@ class UserService implements UserServiceInterface
      * @param User $newUser
      * @return bool|void
      */
-    public function updateProfile( ?string $currentPassword, User $newUser ) : bool {
-
-        if( $newUser->getPassword() !== Null  && $newUser->getPassword() !== $currentPassword && !$this->encryption->verify($newUser->getPassword(), $currentPassword) ) {
-            $newUser->setPassword( $this->encryption->hash( $newUser->getPassword() ) );
-        } else {
-            $newUser->setPassword($currentPassword);
-        }
+    public function updateUser(User $newUser ) : bool {
 
         return $this->userRepository->update( $newUser );
     }
@@ -102,56 +213,16 @@ class UserService implements UserServiceInterface
     }
 
     /**
-     * @param $userController
-     * @param $request
-     * @param $form
-     * @return mixed
+     * @param $email
+     * @return bool
      * @throws Exception
      */
-    public function registerProcess(UserController $userController, $request, &$form)
+    public function verifyEmail($email)
     {
-        $userEntity = new User();
-
-        /** @var FormInterface $form */
-        $form = $userController->createForm( UserRegisterType::class, $userEntity );
-        $arrValidate = $request->request->get("user");
-        $form->handleRequest( $request );
-
-        if( $this->findOneByEmail( $userEntity->getEmail() ) )
+        if( $this->findOneByEmail( $email ) )
             throw new Exception('Email already registered !');
 
-        $this->verifyName( $userEntity->getFullName() );
-        $this->verifyAge( intval( $userEntity->getAge() ) );
-        $this->verifySex($userEntity->getSex() );
-
-        $this->verifyPassword( $arrValidate['password']['first']);
-        $fileName = md5( uniqid() ) . ".png";
-        copy($userController->getParameter('user_directory')."/avatar.png", $userController->getParameter('user_directory') ."/". $fileName);
-        $userEntity->setImage($fileName);
-
-        $passwordHash = $this->encryption->hash( $userEntity->getPassword() );
-        $userEntity->setPassword( $passwordHash );
-
-        /** @var Role $userRole */
-        if( $this->install() ) {
-            $adminRole = $this->roleService->findOneByName( 'ROLE_ADMIN' );
-            $userEntity->addRole( $adminRole );
-
-        }
-
-        $userRole = $this->roleService->findOneByName( 'ROLE_USER' );
-        $userEntity->addRole( $userRole );
-
-        $userEntity->setAddedOn( new DateTime('now'));
-
-        $this->save( $userEntity );
-
         return true;
-    }
-
-    public function verifyEmail($email): bool
-    {
-        // TODO: Implement verifyEmail() method.
     }
 
     /**
@@ -159,12 +230,14 @@ class UserService implements UserServiceInterface
      * @return bool
      * @throws Exception
      */
-    public function verifyName( $name ) {
+    public function verifyName( $name ):bool {
         $re = '/^[a-zA-Z]?[а-яА-Я]?[\D]+$/';
 
         if( preg_match($re, $name) == 0 ) {
             throw new Exception( self::NAME_REQ );
         }
+
+        return true;
     }
 
     /**
@@ -236,4 +309,43 @@ class UserService implements UserServiceInterface
 
        return false;
     }
+
+
+    /**
+     * @param User $user
+     * @param DestinationController|Controller $controller
+     * @return bool
+     */
+    public function deleteImage(User $user, $controller ) {
+        $image = $controller->getParameter('user_directory').'/'.$user->getImage();
+
+        if(file_exists( $image ))
+            if( unlink( $image ))
+                return true;
+
+        return false;
+    }
+
+    /**
+     * @param UploadedFile $image
+     * @param DestinationController|Controller $controller
+     * @return bool
+     * @throws Exception
+     */
+    public function createImage( UploadedFile $image, $controller ) {
+
+        $fileName = md5( uniqid() ) . ".". $image->guessExtension();
+        try {
+            $image->move(
+                $controller->getParameter('user_directory'),
+                $fileName
+            );
+
+            return $fileName;
+        } catch ( FileException $e ) {
+
+            throw new Exception( $e->getMessage() );
+        }
+    }
+
 }

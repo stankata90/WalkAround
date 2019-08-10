@@ -77,6 +77,7 @@ class DestinationService implements DestinationServerInterface
      */
     public function createProcess($controller, $request, &$destEntity ): bool
     {
+
         $destEntity = new Destination();
         /** @var FormInterface $form */
         $form = $controller->createForm( DestinationCreateType::class, $destEntity );

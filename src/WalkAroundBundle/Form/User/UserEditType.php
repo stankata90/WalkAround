@@ -29,6 +29,7 @@ class UserEditType extends AbstractType
             ))
             ->add('age', NumberType::class)
             ->add('sex', ChoiceType::class, [
+
                 'choices' => ['Male' => 'male', 'Female' => 'female'],
             ])
             ->add('image', FileType::class,

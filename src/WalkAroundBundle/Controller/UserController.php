@@ -6,7 +6,6 @@ use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Check;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -111,6 +110,7 @@ class UserController extends Controller
 
         $form = $this->createForm( UserEditType::class, $userEntity );
         $form->handleRequest( $request );
+
         return $this->render( 'user/myProfile.html.twig',
             [
                 'form' => $form->createView(),
@@ -127,43 +127,13 @@ class UserController extends Controller
     public function editProfileProcess( Request $request )
     {
         try {
-            /**@var User $userEntity */
-            $userEntity = $this->security->getUser();
-            $oldImage = $userEntity->getImage();
-            $currentPass =  $userEntity->getPassword();
-            $form = $this->createForm(UserEditType::class, $userEntity);
-            $form->handleRequest($request);
-            /** @var User $current */
+            $this->userService->editProcess( $this, $request, $form );
 
-
-            /** @var UploadedFile $image */
-            $image = $form['image']->getData();
-
-            if(  $image !== NULL AND !$image->getError() ) {
-
-                $fileName = md5( uniqid() ) . ".". $image->guessExtension();
-                $image->move(
-                    $this->getParameter( 'user_directory'),
-                    $fileName
-                );
-
-                $file =$this->getParameter( 'user_directory') ."/". $oldImage;
-
-                if( file_exists( $file ) && $oldImage  )
-                    unlink( $file );
-
-                $userEntity->setImage( $fileName );
-            } else {
-                $userEntity->setImage(  $oldImage );
-            }
-
-            $this->userService->updateProfile($currentPass, $userEntity);
-
-            $this->addFlash('into', 'Success edit your profile!');
+            $this->addFlash('info', 'Success edit your profile!');
             return $this->redirectToRoute( 'my_profile');
 
-
         } catch  ( Exception $e ) {
+
             $this->addFlash('error', $e->getMessage() );
             return $this->redirectToRoute( 'my_profile');
         }

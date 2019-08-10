@@ -156,14 +156,6 @@ class Destination
      */
     private $eventsDestinations;
 
-    /**
-     * @var ArrayCollection
-     *
-     * @ORM\ManyToMany(targetEntity="City", inversedBy="destinations")
-     * @ORM\JoinTable(name="destination_city")
-     *
-     */
-    private $citiesTags;
 
     public function __construct()
     {
@@ -172,7 +164,6 @@ class Destination
         $this->comments = new ArrayCollection();
         $this->likesUsers = new ArrayCollection();
         $this->eventsDestinations = new ArrayCollection();
-        $this->citiesTags = new ArrayCollection();
     }
 
     /**

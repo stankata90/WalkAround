@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\City;
 
 /**
@@ -19,5 +20,49 @@ class CityRepository extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( City::class ) : $class );
+    }
+
+
+    /**
+     * @param City $var
+     * @return bool
+     */
+    public function insert( City $var) :bool {
+        try{
+            $this->_em->persist( $var );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param City $var
+     * @return bool
+     */
+    public function update( City $var) {
+        try{
+            $this->_em->persist( $var );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param City $var
+     * @return bool
+     */
+    public function delete(City $var)
+    {
+        try{
+            $this->_em->remove( $var );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
     }
 }
