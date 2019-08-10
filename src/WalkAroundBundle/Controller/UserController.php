@@ -83,6 +83,7 @@ class UserController extends Controller
     public function registerProcess(Request $request ) {
         /** @var FormInterface $form */
         try {
+
             $this->userService->registerProcess( $this, $request, $form );
             $this->addFlash('info', self::SUCCESS_REG);
 
@@ -169,6 +170,7 @@ class UserController extends Controller
     }
 
     /**
+     * @Check("is_granted('IS_AUTHENTICATED_FULLY')")
      * @Route("/users", name="users" )
      */
     public function allAction() {

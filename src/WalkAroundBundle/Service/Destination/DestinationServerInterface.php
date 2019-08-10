@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use WalkAroundBundle\Controller\DestinationController;
 use WalkAroundBundle\Entity\Destination;
+use WalkAroundBundle\Entity\Event;
 
 interface DestinationServerInterface
 {
@@ -19,6 +20,7 @@ interface DestinationServerInterface
     public function findAll();
     public function findOne( Destination $destination) :?Destination;
     public function findOneById( int $id ) :?Destination;
+    public function findOneByEvent( Event $event);
     public function findDestinationEvents(Destination $destination);
 
     public function update(Destination $destination);

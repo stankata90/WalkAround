@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\Region;
 
 /**
@@ -19,6 +20,49 @@ class RegionRepository extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( Region::class ) : $class );
+    }
+
+    /**
+     * @param Region $region
+     * @return bool
+     */
+    public function insert( Region $region) :bool {
+        try{
+            $this->_em->persist( $region );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Region $region
+     * @return bool
+     */
+    public function update( Region $region) {
+        try{
+            $this->_em->persist( $region );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Region $region
+     * @return bool
+     */
+    public function delete(Region $region)
+    {
+        try{
+            $this->_em->remove( $region );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
     }
 
     /**

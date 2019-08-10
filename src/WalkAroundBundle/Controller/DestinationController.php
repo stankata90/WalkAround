@@ -50,15 +50,26 @@ class DestinationController extends Controller
         $this->likeCommentService = $likeCommentService;
     }
 
+    /**
+     * @param string $type
+     * @param null $data
+     * @param array $options
+     * @return \Symfony\Component\Form\FormInterface
+     */
     public function createForm($type, $data = null, array $options = [])
     {
         return parent::createForm( $type, $data, $options);
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function getParameter($name)
     {
         return parent::getParameter($name);
     }
+
 
     /**
      * @Route("/destinations", name="destination_all", methods={"Get"})
@@ -69,6 +80,7 @@ class DestinationController extends Controller
 
         return $this->render('destination/all.html.twig', array('destinations' => $this->destinationService->findAll() ));
     }
+
 
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
@@ -84,7 +96,6 @@ class DestinationController extends Controller
             ]
         );
     }
-
 
 
     /**
@@ -107,6 +118,7 @@ class DestinationController extends Controller
             return $this->redirectToRoute('destination_create');
         }
     }
+
 
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
@@ -133,6 +145,7 @@ class DestinationController extends Controller
             ]
         );
     }
+
 
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
@@ -166,6 +179,7 @@ class DestinationController extends Controller
         }
     }
 
+
     /**
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @Route( "destination/{id}/delete", name="destination_delete",methods={"POST"}, requirements={"id"="\d+"})
@@ -187,6 +201,7 @@ class DestinationController extends Controller
         $this->addFlash('info', self::SUCCESS_DELETE);
         return $this->redirectToRoute('destination_all');
     }
+
 
     /**
      * @Route("destination/{id}/view/{comment}",defaults={"comment"="0"}, name="destination_view", methods={"GET"}, requirements={"id"="\d+", "comment"="\d+"})
@@ -215,8 +230,11 @@ class DestinationController extends Controller
         ] );
     }
 
+    /**
+     * @return RedirectResponse
+     */
     function goHome() {
+
         return $this->redirectToRoute('destination_all');
     }
-
 }

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use WalkAroundBundle\Entity\Role;
 
 /**
@@ -20,6 +21,50 @@ class RoleRepository extends EntityRepository
     {
         /** @var EntityManager $em */
         parent::__construct($em, $class == null ? new Mapping\ClassMetadata( Role::class ) : $class );
+    }
+
+
+    /**
+     * @param Role $role
+     * @return bool
+     */
+    public function insert( Role $role) :bool {
+        try{
+            $this->_em->persist( $role );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Role $role
+     * @return bool
+     */
+    public function update( Role $role) {
+        try{
+            $this->_em->persist( $role );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Role $role
+     * @return bool
+     */
+    public function delete(Role $role)
+    {
+        try{
+            $this->_em->remove( $role );
+            $this->_em->flush();
+            return true;
+        } catch (OptimisticLockException $e) {
+            return false;
+        }
     }
 
 

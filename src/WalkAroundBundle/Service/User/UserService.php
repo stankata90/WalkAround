@@ -6,8 +6,11 @@ use DateTime;
 use Exception;
 use Symfony\Component\Form\FormInterface;
 use WalkAroundBundle\Controller\UserController;
+use WalkAroundBundle\Entity\Region;
 use WalkAroundBundle\Entity\Role;
 use WalkAroundBundle\Form\User\UserRegisterType;
+use WalkAroundBundle\Repository\RegionRepository;
+use WalkAroundBundle\Repository\RoleRepository;
 use WalkAroundBundle\Service\Encryption\ArgonEncryptionService;
 use Symfony\Component\Security\Core\Security;
 use WalkAroundBundle\Entity\User;
@@ -16,12 +19,15 @@ use WalkAroundBundle\Service\Role\RoleServiceInterface;
 
 class UserService implements UserServiceInterface
 {
+    const ERROR_EMAIL_USED = "Email already registered !";
     const AGE_REQ = "Age must be between 10 and 100, only number";
     const NAME_REQ = "Name must be min 3 and max 50 letters";
     const SEX_REQ = "Invalid sex";
     const PASS_REQ = "Password must be between 4 and 20, letters and digits";
 
     private $userRepository;
+    private $roleRepository;
+    private $regionRepository;
 
     private $roleService;
 
@@ -33,32 +39,23 @@ class UserService implements UserServiceInterface
         Security $security,
         UserRepository $userRepository,
         RoleServiceInterface $roleService,
-        ArgonEncryptionService $encryption
+        ArgonEncryptionService $encryption,
+        RoleRepository $roleRepository,
+        RegionRepository $regionRepository
     )
     {
         $this->userRepository = $userRepository;
         $this->roleService = $roleService;
         $this->security = $security;
         $this->encryption = $encryption;
+        $this->roleRepository = $roleRepository;
+        $this->regionRepository = $regionRepository;
     }
 
     public function save(User $user): bool
     {
 
-        $passwordHash = $this->encryption->hash( $user->getPassword() );
-        $user->setPassword( $passwordHash );
-
-        /** @var Role $userRole */
-        $userRole = $this->roleService->findOneByName( 'USER' );
-
-
-        $user->addRole( $userRole );
-
-
-        $user->setAddedOn( new DateTime('now'));
-
         return $this->userRepository->insert( $user );
-
     }
 
     /**
@@ -87,6 +84,15 @@ class UserService implements UserServiceInterface
     }
 
     /**
+     * @param string $email
+     * @return object|null
+     */
+    public function findOneByEmail( string $email ) : ?object {
+
+        return $this->userRepository->findOneBy(['email' => $email]);
+    }
+
+    /**
      * @return User[]|null|object
      */
     public function findAll()
@@ -111,14 +117,33 @@ class UserService implements UserServiceInterface
         $arrValidate = $request->request->get("user");
         $form->handleRequest( $request );
 
-        $this->verifyName( $arrValidate['fullName'] );
-        $this->verifyAge( $arrValidate['age'] );
-        $this->verifySex( $arrValidate['sex'] );
-        $this->verifyPassword( $arrValidate['password']['first']);
+        if( $this->findOneByEmail( $userEntity->getEmail() ) )
+            throw new Exception('Email already registered !');
 
+        $this->verifyName( $userEntity->getFullName() );
+        $this->verifyAge( intval( $userEntity->getAge() ) );
+        $this->verifySex($userEntity->getSex() );
+
+        $this->verifyPassword( $arrValidate['password']['first']);
         $fileName = md5( uniqid() ) . ".png";
         copy($userController->getParameter('user_directory')."/avatar.png", $userController->getParameter('user_directory') ."/". $fileName);
         $userEntity->setImage($fileName);
+
+        $passwordHash = $this->encryption->hash( $userEntity->getPassword() );
+        $userEntity->setPassword( $passwordHash );
+
+        /** @var Role $userRole */
+        if( $this->install() ) {
+            $adminRole = $this->roleService->findOneByName( 'ROLE_ADMIN' );
+            $userEntity->addRole( $adminRole );
+
+        }
+
+        $userRole = $this->roleService->findOneByName( 'ROLE_USER' );
+        $userEntity->addRole( $userRole );
+
+        $userEntity->setAddedOn( new DateTime('now'));
+
         $this->save( $userEntity );
 
         return true;
@@ -134,11 +159,12 @@ class UserService implements UserServiceInterface
      * @return bool
      * @throws Exception
      */
-    public function verifyName( $name ):bool {
-        if( !ctype_alpha($name) OR mb_strlen( $name ) < 3 OR mb_strlen( $name ) > 50 ) {
+    public function verifyName( $name ) {
+        $re = '/^[a-zA-Z]?[а-яА-Я]?[\D]+$/';
+
+        if( preg_match($re, $name) == 0 ) {
             throw new Exception( self::NAME_REQ );
         }
-        return true;
     }
 
     /**
@@ -147,7 +173,8 @@ class UserService implements UserServiceInterface
      * @throws Exception
      */
     public function verifyAge( $age ):bool{
-        if( !ctype_digit($age) OR $age > 100 OR  $age < 10 ) {
+
+        if(  $age > 100 OR  $age < 10 ) {
             throw new Exception( self::AGE_REQ );
         }
         return true;
@@ -181,5 +208,32 @@ class UserService implements UserServiceInterface
     public function isAdmin(): bool
     {
         return in_array( 'ROLE_ADMIN', $this->security->getUser()->getRoles()) ;
+    }
+
+    public function install()
+    {
+       if( !$this->userRepository->findAll() ){
+
+           $roles = ['ROLE_USER', 'ROLE_ADMIN'];
+
+           foreach ( $roles as $rolName ) {
+               $rol = new Role();
+                    $rol->setName( $rolName );
+
+                $this->roleRepository->insert( $rol );
+           }
+           $regions = ['North Western', 'North Central', 'North Eastern', 'South Eastern', 'South Western'];
+
+           foreach ( $regions as $regionName ) {
+               $region = new Region();
+               $region->setName( $regionName );
+
+               $this->regionRepository->insert( $region );
+           }
+
+           return true;
+       }
+
+       return false;
     }
 }

@@ -25,5 +25,7 @@ interface EventServiceInterface
     public function findInvitedUsers( Event $event ) :?array ;
     public function isCompleted( Event $event );
 
+    public function addVisitedDestination( Event $event, int $cont );
+
 
 }

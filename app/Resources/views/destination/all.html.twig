@@ -7,7 +7,9 @@
 {% block page_title %}Destinations{% endblock %}
 
 {% block page_button %}
-    <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_create')  }}" >New Destination</a>
+    {% if app.user %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ path('destination_create')  }}" >New Destination</a>
+    {% endif %}
 {% endblock %}
 
 

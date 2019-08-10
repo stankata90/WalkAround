@@ -15,6 +15,7 @@ use WalkAroundBundle\Entity\EventComment;
 use WalkAroundBundle\Entity\EventUser;
 use WalkAroundBundle\Entity\User;
 use WalkAroundBundle\Form\Event\EventCreateType;
+use WalkAroundBundle\Repository\DestinationRepository;
 use WalkAroundBundle\Repository\EventRepository;
 use WalkAroundBundle\Repository\EventUserRepository;
 use WalkAroundBundle\Service\CommentEvent\CommentEventServiceInterface;
@@ -24,27 +25,35 @@ use WalkAroundBundle\Service\User\UserServiceInterface;
 class EventService implements EventServiceInterface
 {
     private $security;
-    private $eventRepo;
-    private $eventUserRepo;
     private $userService;
     private $friendService;
     private $commentService;
 
+    private $eventRepo;
+    private $eventUserRepo;
+    private $destRepo;
+
     public function __construct(
         Security $security,
-        EventRepository $eventRepository,
         UserServiceInterface $userService,
         FriendServiceInterface $friendService,
+        CommentEventServiceInterface $commentService,
+
+        EventRepository $eventRepository,
         EventUserRepository $eventUserRepo,
-        CommentEventServiceInterface $commentService
+        DestinationRepository $destRepo
     )
     {
         $this->security = $security;
-        $this->eventRepo = $eventRepository;
         $this->userService = $userService;
         $this->friendService = $friendService;
-        $this->eventUserRepo = $eventUserRepo;
         $this->commentService = $commentService;
+
+
+        $this->eventUserRepo = $eventUserRepo;
+        $this->eventRepo = $eventRepository;
+        $this->destRepo = $destRepo;
+
     }
 
     /**
@@ -138,10 +147,16 @@ class EventService implements EventServiceInterface
 
     public function endProcess(Event $event)
     {
+        $newVisited = 0;
         foreach ( $this->findById( $event->getId() ) as $userForLeave ) {
             /** @var EventUser $userForLeave */
-            $this->eventUserRepo->delete( $userForLeave );
+            if( $userForLeave->getAccepted() != null )
+                $newVisited++;
+            else
+                $this->eventUserRepo->delete( $userForLeave );
         }
+
+        $this->addVisitedDestination( $event, $newVisited );
 
         $event
             ->setEndOn( new DateTime() )
@@ -185,7 +200,7 @@ class EventService implements EventServiceInterface
 
     public function findById(int $id)
     {
-        return $this->eventUserRepo->findBy(['eventId' => $id, 'accepted' => null ]);
+        return $this->eventUserRepo->findBy(['eventId' => $id]);
     }
 
     public function findByDestination( Destination $destination ){
@@ -228,5 +243,20 @@ class EventService implements EventServiceInterface
     public function isCompleted(Event $event)
     {
         return ( $this->eventRepo->findOneBy(['id' => $event->getId(), 'status' => 1 ] ) != null );
+    }
+
+    /**
+     * @param Event $event
+     * @param $count
+     * @return bool
+     */
+    public function addVisitedDestination(Event $event, $count )
+    {
+        /** @var Destination $destEntity */
+        $destEntity = $this->destRepo->find( $event->getDestinationId() );
+        $destEntity->setCountVisited( $destEntity->getCountVisited() + $count );
+        $this->destRepo->update($destEntity);
+
+        return true;
     }
 }

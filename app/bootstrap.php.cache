@@ -38,7 +38,7 @@ public function has($key)
 {
 return \array_key_exists($key, $this->parameters);
 }
-public function removeProcess($key)
+public function remove($key)
 {
 unset($this->parameters[$key]);
 }
@@ -174,7 +174,7 @@ public function contains($key, $value)
 {
 return \in_array($value, $this->get($key, null, false));
 }
-public function removeProcess($key)
+public function remove($key)
 {
 $key = str_replace('_','-', strtolower($key));
 unset($this->headers[$key]);
@@ -1215,8 +1215,8 @@ protected function prepareRequestUri()
 $requestUri ='';
 if ('1'== $this->server->get('IIS_WasUrlRewritten') &&''!= $this->server->get('UNENCODED_URL')) {
 $requestUri = $this->server->get('UNENCODED_URL');
-$this->server->removeProcess('UNENCODED_URL');
-$this->server->removeProcess('IIS_WasUrlRewritten');
+$this->server->remove('UNENCODED_URL');
+$this->server->remove('IIS_WasUrlRewritten');
 } elseif ($this->server->has('REQUEST_URI')) {
 $requestUri = $this->server->get('REQUEST_URI');
 if (''!== $requestUri &&'/'=== $requestUri[0]) {
@@ -1237,7 +1237,7 @@ $requestUri = $this->server->get('ORIG_PATH_INFO');
 if (''!= $this->server->get('QUERY_STRING')) {
 $requestUri .='?'.$this->server->get('QUERY_STRING');
 }
-$this->server->removeProcess('ORIG_PATH_INFO');
+$this->server->remove('ORIG_PATH_INFO');
 }
 $this->server->set('REQUEST_URI', $requestUri);
 return $requestUri;
@@ -1399,7 +1399,7 @@ if (!$this->isForwardedValid) {
 return null !== $ip ? ['0.0.0.0', $ip] : [];
 }
 $this->isForwardedValid = false;
-throw new ConflictingHeadersException(sprintf('The request has both a trusted "%s" header and a trusted "%s" header, conflicting with each other. You should either configure your proxy to removeProcess one of them, or configure your project to distrust the offending one.', self::$trustedHeaders[self::HEADER_FORWARDED], self::$trustedHeaders[$type]));
+throw new ConflictingHeadersException(sprintf('The request has both a trusted "%s" header and a trusted "%s" header, conflicting with each other. You should either configure your proxy to remove one of them, or configure your project to distrust the offending one.', self::$trustedHeaders[self::HEADER_FORWARDED], self::$trustedHeaders[$type]));
 }
 private function normalizeAndFilterClientIps(array $clientIps, $ip)
 {

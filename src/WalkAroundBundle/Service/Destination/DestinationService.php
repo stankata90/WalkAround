@@ -15,6 +15,7 @@ use Symfony\Component\Security\Core\Security;
 use WalkAroundBundle\Controller\DestinationController;
 use WalkAroundBundle\Entity\Destination;
 use WalkAroundBundle\Entity\DestinationLiked;
+use WalkAroundBundle\Entity\Event;
 use WalkAroundBundle\Entity\User;
 use WalkAroundBundle\Form\Destination\DestinationCreateType;
 use WalkAroundBundle\Form\Destination\DestinationEditType;
@@ -200,6 +201,14 @@ class DestinationService implements DestinationServerInterface
         return $this->destinationRepo->findOneBy( [ 'id'=> $id ] );
     }
 
+    /**
+     * @param Event $event
+     * @return object|null
+     */
+    public function findOneByEvent( Event $event) {
+
+        return $this->destinationRepo->find($event->getDestinationId() );
+    }
     /**
      * @param Destination $destination
      * @return mixed
