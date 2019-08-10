@@ -2,6 +2,7 @@
 
 namespace WalkAroundBundle\Controller;
 
+use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,6 +30,16 @@ class MessageController extends Controller
 
         $this->messageService = $messageService;
         $this->userService = $userService;
+    }
+
+    public function createForm($type, $data = null, array $options = [])
+    {
+        return parent::createForm( $type, $data, $options);
+    }
+
+    public function getParameter($name)
+    {
+        return parent::getParameter($name);
     }
 
 
@@ -93,11 +104,17 @@ class MessageController extends Controller
             return $this->goHome();
 
         /** @var Message $message */
-        $message = new Message();
 
-        if( $this->messageService->createMessage($this->createForm(MessageNewType::class, $message ), $message->setForId($id), $request  )) {
-                $this->addFlash( 'info', self::SUCCESS_SEND);
+        try {
+            $this->messageService->createMessage( $this, $request, $user  );
+
+            $this->addFlash( 'info', self::SUCCESS_SEND);
             return $this->redirectToRoute( 'user_profile', ['id'=> $id] );
+
+        } catch  ( Exception $e ) {
+
+            $this->addFlash('error', $e->getMessage() );
+
         }
 
         return $this->redirectToRoute( 'mailbox_new', ['id' => $id ] );

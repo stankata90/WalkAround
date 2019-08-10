@@ -3,15 +3,15 @@
 
 namespace WalkAroundBundle\Service\Message;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\FormInterface;
 use WalkAroundBundle\Entity\Message;
 use WalkAroundBundle\Entity\User;
 
 interface MessageServiceInterface
 {
     public function sendMessage(Message $message):bool ;
-    public function createMessage(FormInterface $form, Message $message, Request $request):bool;
+    public function createMessage(Controller $controller, Request $request, User $user ):bool;
     public function removeMessage(Message $message):bool;
     public function deleteMessage(Message $message):bool;
     public function seenMessage(Message $message):bool;

@@ -120,7 +120,7 @@
             {% for message in app.flashes('info') %}
                 <div class="container offset=2">
                     <div class="well m-2">
-                        <div class="alert alert-info" role="alert" class="fade" >
+                        <div class="alert alert-info text-center" role="alert" class="fade" >
                             {{ message }}
                             <button type="button" class="close " data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -133,7 +133,7 @@
             {% for message in app.flashes('error') %}
                 <div class="container">
                     <div class="well m-2">
-                        <div class="alert alert-danger" role="alert" class="fade" >
+                        <div class="alert alert-danger text-center" role="alert" class="fade" >
                             {{ message }}
                             <button type="button" class="close " data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>

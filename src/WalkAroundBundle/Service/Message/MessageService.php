@@ -4,11 +4,14 @@
 namespace WalkAroundBundle\Service\Message;
 
 use DateTime;
+use Exception;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Security;
+use WalkAroundBundle\Controller\MessageController;
 use WalkAroundBundle\Entity\Message;
 use WalkAroundBundle\Entity\User;
+use WalkAroundBundle\Form\Message\MessageNewType;
 use WalkAroundBundle\Repository\MessageRepository;
 use WalkAroundBundle\Service\User\UserServiceInterface;
 
@@ -34,15 +37,30 @@ class MessageService implements MessageServiceInterface
         return false;
     }
 
-    public function createMessage(FormInterface $form, Message $message, Request $request ): bool
+    /**
+     * @param Controller|MessageController $contr
+     * @param Request $request
+     * @param User $user
+     * @return bool
+     * @throws Exception
+     */
+    public function createMessage( $contr, $request, $user ): bool
     {
-        /** @var User $formUser */
-        $formUser = $this->userService->findOneById( $message->getForId() );
-        $this->currentUser = $this->security->getUser();
+        $message = new Message();
+        $form = $contr->createForm( MessageNewType::class, $message );
         $form->handleRequest( $request );
+
+        $this->currentUser = $this->security->getUser();
+
+        if( $message->getAbout() == null )
+            throw new Exception('empty about');
+
+        if( $message->getContent() == null )
+            throw new Exception( 'empty content');
+
         $message
             ->setFromUser( $this->currentUser )
-            ->setForUser( $formUser)
+            ->setForUser( $user )
             ->setAddedOn( new DateTime('now'));
 
         return $this->sendMessage( $message );

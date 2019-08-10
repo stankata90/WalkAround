@@ -63,7 +63,7 @@
                                         <tr>
                                             <td style="width: 1px;">
                                                 {% set bgavatar = asset('uploads/images/user/') ~ comment.addUser.image %}
-                                                <div class="commentAvatar img-thumbnail card-img-top" style="background-image: url('{{ bgavatar }}');" >
+                                                <div class="avatar comment  img-thumbnail card-img-top" style="background-image: url('{{ bgavatar }}');" >
                                                 </div>
                                             </td>
                                             <td>
@@ -90,7 +90,7 @@
                                                         <tr>
                                                             <td>
                                                                 {% set bgavatarre = asset('uploads/images/user/') ~ re.addUser.image %}
-                                                                <div class="commentAvatar img-thumbnail card-img-top" style="background-image: url('{{ bgavatarre }}');" >
+                                                                <div class="avatar comment img-thumbnail card-img-top" style="background-image: url('{{ bgavatarre }}');" >
                                                                 </div>
                                                             <td  class=" align-text-top ">{{ re.content }}</td>
                                                         </tr>
@@ -115,7 +115,7 @@
 
                             <div class="col-4 pr-1" >
                                 {% set avatar = asset('uploads/images/user/') ~ invited.user.image %}
-                                <div class="avatar img-thumbnail card-img-top" style="background: url('{{ avatar }}') no-repeat center; background-size: cover; display: inline-block;  width: 60px; height: 60px; " >
+                                <div class="avatar invited img-thumbnail card-img-top" style="background-image: url('{{ avatar }}');" >
                                 </div>
 
                             </div>
