@@ -23,6 +23,8 @@ interface DestinationServerInterface
     public function findOneByEvent( Event $event);
     public function findDestinationEvents(Destination $destination);
 
+    public function listAll( int $page, &$findPages ):?array;
+
     public function update(Destination $destination);
 
     public function addSeenCount( Destination $destination);

@@ -115,7 +115,6 @@ class UserService implements UserServiceInterface
 
         /**@var User $userEntity */
         $userEntity = $this->security->getUser();
-        $oldImg = $userEntity->getImage();
         $oldProfile = new User();
         $oldProfile
             ->setEmail( $userEntity->getEmail() )
@@ -211,6 +210,27 @@ class UserService implements UserServiceInterface
     {
 
         return $this->userRepository->findAll();
+    }
+
+    /**
+     * @param int $page
+     * @return User[]|null|
+     */
+    public function listAll( int $page, &$findPages ) :?array {
+        $perPage = 8;
+
+        $countResult = count( $this->userRepository->findAll() );
+        $findPages = ceil( $countResult / $perPage );
+        if( $findPages < $page ) {
+            $page = $countResult / $perPage;
+        }
+        $offset = $page*$perPage-$perPage;
+
+        if( $offset < 0 ){
+            $offset = 0;
+        }
+
+        return  $this->userRepository->findBy([],[], $perPage, $offset );
     }
 
     /**

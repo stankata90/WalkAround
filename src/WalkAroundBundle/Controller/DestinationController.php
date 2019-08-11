@@ -72,13 +72,14 @@ class DestinationController extends Controller
 
 
     /**
-     * @Route("/destinations", name="destination_all", methods={"Get"})
+     * @Route("/destinations/{page}",defaults={"page"="0"}, requirements={"page"="\d+"}, name="destination_all", methods={"Get"})
+     * @param int $page
      * @return Response
      */
-    public function indexAction()
+    public function indexAction( int $page )
     {
 
-        return $this->render('destination/all.html.twig', array('destinations' => $this->destinationService->findAll() ));
+        return $this->render('destination/all.html.twig', array('destinations' => $this->destinationService->listAll( $page, $findPages ), 'intPages' => $findPages ));
     }
 
 

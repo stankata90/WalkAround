@@ -141,13 +141,16 @@ class UserController extends Controller
 
     /**
      * @Check("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @Route("/users", name="users" )
+     * @Route("/users/{page}",defaults={"page"="0"}, requirements={"page"="\d+"}, name="users" )
+     * @param int $page
+     * @return Response
      */
-    public function allAction() {
+    public function allAction( int $page ) {
         /** @var User[] $arrUser */
-        $arrUser = $this->userService->findAll();
 
-        return $this->render( 'user/all.html.twig', ['users' => $arrUser]);
+        $arrUser = $this->userService->listAll( $page, $findPages );
+
+        return $this->render( 'user/all.html.twig', ['users' => $arrUser, 'intPages' => $findPages ]);
     }
 
     /**

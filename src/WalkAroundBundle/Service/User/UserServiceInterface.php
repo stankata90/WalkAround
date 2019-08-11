@@ -20,6 +20,8 @@ interface UserServiceInterface
     public function findOneByEmail( string $email ) : ?object;
     public function findAll();
 
+    public function listAll( int $page, &$findPages ):?array;
+
     public function verifyEmail( $email );
     public function verifyName( $name ):bool;
     public function verifyAge( $age );

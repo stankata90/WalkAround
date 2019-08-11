@@ -32,9 +32,9 @@ class RegionService implements RegionServiceInterface
 
     /**
      * @param string $name
-     * @return Region|null
+     * @return object|Region|null
      */
-    public function getByName(string $name): ?Region
+    public function getByName(string $name)
     {
         return $this->regionRepository->findOneBy(['name' => $name]);
 

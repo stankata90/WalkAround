@@ -219,6 +219,28 @@ class DestinationService implements DestinationServerInterface
         return $this->eventService->findByDestination( $destination);
     }
 
+
+    /**
+     * @param int $page
+     * @return User[]|null|
+     */
+    public function listAll( int $page, &$findPages ) :?array {
+        $perPage = 6;
+
+        $countResult = count( $this->destinationRepo->findAll() );
+        $findPages = ceil( $countResult / $perPage );
+        if( $findPages < $page ) {
+            $page = $countResult / $perPage;
+        }
+        $offset = $page*$perPage-$perPage;
+
+        if( $offset < 0 ) {
+            $offset = 0;
+        }
+
+        return  $this->destinationRepo->findBy([],[], $perPage, $offset );
+    }
+
     public function update(Destination $destination) {
         return $this->destinationRepo->update( $destination );
     }

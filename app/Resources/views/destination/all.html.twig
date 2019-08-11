@@ -45,4 +45,30 @@
             </div>
         </div>
 
+    <div class="container">
+        <div class="row col-12 align-items-center  p-auto">
+
+            <nav class="col-12 " aria-label="Page navigation example">
+
+                <ul class="pagination justify-content-center">
+                    {% if app.request.get("page") > 1 and intPages > 1 %}
+                        <li class="page-item"><a class="page-link" href="{{ path('destination_all', {page:1}) }}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item disabled "><a class="page-link" href="#">Previous</a></li>
+                    {% endif %}
+
+                    {% for page in 1..intPages %}
+                        <li class="page-item {% if  app.request.get("page") == page or intPages == 1 %}active{% endif %}"><a class="page-link" href="{{ path('destination_all', {page:page}) }}">{{ page }}</a></li>
+                    {% endfor %}
+
+                    {% if app.request.get("page") < intPages and intPages > 1 %}
+                        <li class="page-item "><a class="page-link" href="{{ path('destination_all', {page:intPages}) }}">Next</a></li>
+                    {% else %}
+                        <li class="page-item disabled "><a class="page-link" href="#">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+
 {% endblock %}
