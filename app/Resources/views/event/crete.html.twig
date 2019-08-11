@@ -16,7 +16,7 @@
 
         <div class="col-4">
             <a href="{{ path('destination_view', {id:dest.id}) }}" ><h5>{{ dest.name }}</h5></a>
-            <a href="{{ path('destination_view', {id:dest.id}) }}" ><img class="avatar img-thumbnail card-img-top" src="{{ asset('uploads/images/destination/' ~  dest.image ) }}" alt="" /></a>
+            <a href="{{ path('destination_view', {id:dest.id}) }}" ><img class="img-thumbnail card-img-top" src="{{ asset('uploads/images/destination/' ~  dest.image ) }}" alt="" /></a>
             <small>{{ dest.description }}</small>
             <hr />
 
@@ -47,27 +47,30 @@
                 <div class="form-group">
                     <label class="col-sm-12 control-label" for="date">Invitations to the event</label>
                     <div class="col-sm-12 ">
+
                         {% for friend in friends %}
                             <div class="container">
-                                <div class="row justify-content-center align-items-center" >
+                                <div class="well justify-content-center align-items-center" >
                                     <label class=" row  align-items-center" for="user_{{ friend.friendUser.id }}">
 
-                                        <span class="col-4" >
-
-                                            <img class="avatar img-thumbnail card-img-top"  src="{{ asset('uploads/images/user/' ~ friend.friendUser.image )  }}" w alt="" />
+                                        <span class="col-2" >
+                                            {% set bgavatar = asset('uploads/images/user/' ~ friend.friendUser.image ) %}
+                                            <div class="avatar invited img-thumbnail card-img-top" style="background-image: url('{{ bgavatar }}'); " ></div>
+                                            {#<img class="avatar img-thumbnail card-img-top" src="{{ asset('uploads/images/user/' ~ friend.friendUser.image )  }}" alt="" />#}
                                         </span>
 
                                         <span  class="col-1">
                                             <input type="checkbox" class="form-control" id="user_{{ friend.friendUser.id }}"  name="event[eventUsers][]" value="{{ friend.friendUser.id }}" />
                                         </span>
 
-                                        <span  class="col-7 text-left border">
+                                        <span  class="col-9 text-left">
                                             {{ friend.friendUser.fullName }}
                                         </span>
                                     </label>
                                 </div>
 
                             </div>
+
                         {% endfor %}
 
                     </div>
