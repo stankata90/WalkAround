@@ -72,7 +72,7 @@ class DestinationController extends Controller
 
 
     /**
-     * @Route("/destinations/{page}",defaults={"page"="0"}, requirements={"page"="\d+"}, name="destination_all", methods={"Get"})
+     * @Route("/destinations/{page}", defaults={"page"="0"}, requirements={"page"="\d+"}, name="destination_all", methods={"Get"})
      * @param int $page
      * @return Response
      */
