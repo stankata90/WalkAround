@@ -47,13 +47,14 @@
                 <div class="form-group">
                     <label class="col-sm-12 control-label" for="date">Invitations to the event</label>
                     <div class="col-sm-12 ">
-
                         {% for friend in friends %}
                             <div class="container">
                                 <div class="row justify-content-center align-items-center" >
                                     <label class=" row  align-items-center" for="user_{{ friend.friendUser.id }}">
+
                                         <span class="col-4" >
-                                            <img class="avatar img-thumbnail card-img-top" src="{{ asset('uploads/images/user/' ~ friend.friendUser.image )  }}" alt="" />
+
+                                            <img class="avatar img-thumbnail card-img-top"  src="{{ asset('uploads/images/user/' ~ friend.friendUser.image )  }}" w alt="" />
                                         </span>
 
                                         <span  class="col-1">
@@ -67,7 +68,6 @@
                                 </div>
 
                             </div>
-
                         {% endfor %}
 
                     </div>
