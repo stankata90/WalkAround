@@ -58,6 +58,7 @@
                                     <span class="badge badge-danger badge-pill">{{ events.countNewEvent }}</span>
                                 {% endif %}
                             </a>
+                            {% if events.countNewEvent > 0 %}
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 
                                 {%  for invitedEvent in app.user.eventsdestinations|filter( v => v.accepted is null  and  v.event.status == 0 ) %}
@@ -68,6 +69,7 @@
                                     <a class="dropdown-item" href="{{ path('event_view',{id:invitedEvent.event.id}) }}">{{  invitedEvent.event.addUser.fullName  }} (<b>{{  invitedEvent.event.destination.name  }} {{  invitedEvent.event.eventOn|date('d-m-Yг.')  }}</b>)</a>
                                 {% endfor %}
                             </div>
+                            {% endif %}
                         </li>
                         {% endif %}
                     </ul>
