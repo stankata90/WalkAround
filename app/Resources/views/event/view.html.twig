@@ -67,7 +67,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <small><a href="{{ path('user_profile', {id:comment.addUser.getid}) }}">{{ comment.addUser.username }}</a> {{ comment.content }}</small>
+                                                <small><b><a href="{{ path('user_profile', {id:comment.addUser.getid}) }}">{{ comment.addUser.username }}</a></b> {{ comment.content }}</small>
                                             </td>
                                         </tr>
                                         <tr>
@@ -92,7 +92,7 @@
                                                                 {% set bgavatarre = asset('uploads/images/user/') ~ re.addUser.image %}
                                                                 <div class="avatar comment img-thumbnail card-img-top" style="background-image: url('{{ bgavatarre }}');" >
                                                                 </div>
-                                                            <td  class=" align-text-top ">{{ re.content }}</td>
+                                                            <td  class=" align-text-top "><small><b><a href="{{ path('user_profile', {id:re.addUser.getId}) }}">{{ re.addUser.fullName }}:</a> </b></small>{{ re.content }}</td>
                                                         </tr>
                                                     </table>
                                                 </td>
