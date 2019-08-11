@@ -17,7 +17,7 @@
              <a href="{{ path('event_leave_process', {id:event.id}) }}" class="btn btn-sm btn-outline-danger" >Leave Event</a>
 
              {% if app.user.eventsdestinations|filter( v => v.event.id == event.id and v.accepted is not null )|length == 0 %}
-                <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >Accepted Event</a>
+                <a href="{{ path('event_accept_process', {id:event.id}) }}" class="btn btn-sm btn-outline-secondary" >Accept Event</a>
              {% endif %}
 
          {% else %}
