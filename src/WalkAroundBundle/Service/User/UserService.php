@@ -137,9 +137,9 @@ class UserService implements UserServiceInterface
         $this->verifySex($userEntity->getSex() );
 
         $arrValidate = $request->request->get("user");
-        $this->verifyPassword( $arrValidate['password']['first']);
 
         if( $userEntity->getPassword() !== Null  && $userEntity->getPassword() !== $currentPass && !$this->encryption->verify($userEntity->getPassword(), $currentPass) ) {
+            $this->verifyPassword( $arrValidate['password']['first']);
             $userEntity->setPassword( $this->encryption->hash( $userEntity->getPassword() ) );
         } else {
             $userEntity->setPassword($currentPass);
