@@ -2,7 +2,7 @@
 {% set events =
     {
         'countNewFriend': app.user.friends|filter( v => v.friendship.acceptedOn == null and v.friendship.acceptedId == app.user.getId )|length,
-        'countNewMail': app.user.receivedMessages|filter(v => v.seenOn == null  )|length,
+        'countNewMail': app.user.receivedMail|filter(v => v.seenOn == null  )|length,
         'countNewEvent': app.user.eventsdestinations|filter( v => v.accepted is null  and  v.event.status == 0 )|length
     }
 %}

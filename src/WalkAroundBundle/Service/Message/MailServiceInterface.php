@@ -5,18 +5,18 @@ namespace WalkAroundBundle\Service\Message;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use WalkAroundBundle\Entity\Message;
+use WalkAroundBundle\Entity\Mail;
 use WalkAroundBundle\Entity\User;
 
-interface MessageServiceInterface
+interface MailServiceInterface
 {
-    public function sendMessage(Message $message):bool ;
+    public function sendMessage(Mail $message):bool ;
     public function createMessage(Controller $controller, Request $request, User $user ):bool;
-    public function removeMessage(Message $message):bool;
-    public function deleteMessage(Message $message):bool;
-    public function seenMessage(Message $message):bool;
-    public function readMessage(Message $message):?object;
-    public function getMessage(Message $message):?object;
+    public function removeMessage(Mail $message):bool;
+    public function deleteMessage(Mail $message):bool;
+    public function seenMessage(Mail $message):bool;
+    public function readMessage(Mail $message):?object;
+    public function getMessage(Mail $message):?object;
     public function getMessageById(int $messageId):?object;
     public function getMessageByAuthor(User $user) :?object;
     public function getMessageByAuthorId(int $authorId ) :?object;

@@ -9,27 +9,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use WalkAroundBundle\Controller\MessageController;
-use WalkAroundBundle\Entity\Message;
+use WalkAroundBundle\Entity\Mail;
 use WalkAroundBundle\Entity\User;
 use WalkAroundBundle\Form\Message\MessageNewType;
-use WalkAroundBundle\Repository\MessageRepository;
+use WalkAroundBundle\Repository\MailRepository;
 use WalkAroundBundle\Service\User\UserServiceInterface;
 
-class MessageService implements MessageServiceInterface
+class MailService implements MailServiceInterface
 {
     private $messageRepository;
     /** @var User */
     private $currentUser;
     private $security;
     private $userService;
-    function __construct(MessageRepository $messageRepository, Security $security, UserServiceInterface $userService )
+    function __construct(MailRepository $messageRepository, Security $security, UserServiceInterface $userService )
     {
         $this->messageRepository = $messageRepository;
         $this->security = $security;
         $this->userService = $userService;
     }
 
-    public function sendMessage( Message $message ) :bool
+    public function sendMessage(Mail $message ) :bool
     {
         if( $this->messageRepository->insert( $message ) )
             return true;
@@ -46,7 +46,7 @@ class MessageService implements MessageServiceInterface
      */
     public function createMessage( $contr, $request, $user ): bool
     {
-        $message = new Message();
+        $message = new Mail();
         $form = $contr->createForm( MessageNewType::class, $message );
         $form->handleRequest( $request );
 
@@ -66,7 +66,7 @@ class MessageService implements MessageServiceInterface
         return $this->sendMessage( $message );
     }
 
-    public function removeMessage(Message $message): bool
+    public function removeMessage(Mail $message): bool
     {
         if( $this->messageRepository->delete($message) )
             return true;
@@ -74,12 +74,12 @@ class MessageService implements MessageServiceInterface
         return false;
     }
 
-    public function deleteMessage(Message $message): bool
+    public function deleteMessage(Mail $message): bool
     {
         return $this->removeMessage( $message );
     }
 
-    public function seenMessage(Message $message): bool
+    public function seenMessage(Mail $message): bool
     {
         if( $this->messageRepository->update( $message->setSeenOn( new DateTime('now') ) ) )
             return true;
@@ -87,13 +87,13 @@ class MessageService implements MessageServiceInterface
         return false;
     }
 
-    public function readMessage(Message $message): ?object
+    public function readMessage(Mail $message): ?object
     {
          $this->seenMessage( $message );
          return $this->getMessage( $message );
     }
 
-    public function getMessage(Message $message): ?object
+    public function getMessage(Mail $message): ?object
     {
         return $this->messageRepository->find( $message );
     }

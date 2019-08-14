@@ -9,10 +9,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use WalkAroundBundle\Entity\Message;
+use WalkAroundBundle\Entity\Mail;
 use WalkAroundBundle\Entity\User;
 use WalkAroundBundle\Form\Message\MessageNewType;
-use WalkAroundBundle\Service\Message\MessageServiceInterface;
+use WalkAroundBundle\Service\Message\MailServiceInterface;
 use WalkAroundBundle\Service\User\UserServiceInterface;
 
 class MessageController extends Controller
@@ -25,7 +25,7 @@ class MessageController extends Controller
     private $messageService;
     private $userService;
 
-    public function __construct( MessageServiceInterface $messageService, UserServiceInterface $userService)
+    public function __construct(MailServiceInterface $messageService, UserServiceInterface $userService)
     {
 
         $this->messageService = $messageService;
@@ -51,7 +51,7 @@ class MessageController extends Controller
     public function inboxAction()
     {
         $this->currentUser = $this->getUser();
-        /** @var Message $arrMessageEntity */
+        /** @var Mail $arrMessageEntity */
         $arrMessageEntity = $this->messageService->getInboxMessage( $this->currentUser );
 
         return $this->render("mailbox/inbox.html.twig", ['messages' => $arrMessageEntity]);
@@ -65,7 +65,7 @@ class MessageController extends Controller
     public function outboxAction()
     {
         $this->currentUser = $this->getUser();
-        /** @var Message $arrMessageEntity */
+        /** @var Mail $arrMessageEntity */
         $arrMessageEntity = $this->messageService->getOutboxMessage( $this->currentUser );
 
         return $this->render("mailbox/outbox.html.twig", ['messages' => $arrMessageEntity]);
@@ -103,7 +103,7 @@ class MessageController extends Controller
         if( !$user )
             return $this->goHome();
 
-        /** @var Message $message */
+        /** @var Mail $message */
 
         try {
             $this->messageService->createMessage( $this, $request, $user  );
@@ -129,7 +129,7 @@ class MessageController extends Controller
      */
     public function viewAction( $id )
     {
-        /** @var Message $mail */
+        /** @var Mail $mail */
         $mail = $this->messageService->getMessageById( intval( $id ) );
         if( !$mail )
             return $this->goHome();
@@ -146,7 +146,7 @@ class MessageController extends Controller
      */
     public function deleteProcess($id )
     {
-        /** @var Message $messageEntity */
+        /** @var Mail $messageEntity */
         $messageEntity = $this->messageService->getMessageById( intval( $id ) );
         if( !$messageEntity )
             return $this->goHome();

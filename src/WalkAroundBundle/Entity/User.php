@@ -123,15 +123,15 @@ class User implements UserInterface
 
     /**
      * @var ArrayCollection
-     * @ORM\OneToMany( targetEntity="Message", mappedBy="fromUser")
+     * @ORM\OneToMany( targetEntity="Mail", mappedBy="fromUser")
      */
-    private $sendMessages;
+    private $sendMail;
 
     /**
      * @var ArrayCollection
-     * @ORM\OneToMany( targetEntity="Message", mappedBy="forUser")
+     * @ORM\OneToMany( targetEntity="Mail", mappedBy="forUser")
      */
-    private $receivedMessages;
+    private $receivedMail;
 
     /**
      * @var ArrayCollection
@@ -158,8 +158,8 @@ class User implements UserInterface
         $this->likesDestinations = new ArrayCollection();
         $this->createdEventsDestinations = new ArrayCollection();
         $this->eventsDestinations = new ArrayCollection();
-        $this->sendMessages = new ArrayCollection();
-        $this->receivedMessages = new ArrayCollection();
+        $this->sendMail = new ArrayCollection();
+        $this->receivedMail = new ArrayCollection();
         $this->roles = new ArrayCollection();
         $this->friends = new ArrayCollection();
     }
@@ -476,27 +476,27 @@ class User implements UserInterface
     /**
      * @return ArrayCollection
      */
-    public function getSendMessages()
+    public function getSendMail()
     {
-        return $this->sendMessages;
+        return $this->sendMail;
     }
 
     /**
      * @return User
      * @param ArrayCollection $sendMessage
      */
-    public function setSendMessages($sendMessage)
+    public function setSendMail($sendMessage)
     {
-        $this->sendMessages[] = $sendMessage;
+        $this->sendMail[] = $sendMessage;
         return $this;
     }
 
     /**
      * @return ArrayCollection
      */
-    public function getReceivedMessages()
+    public function getReceivedMail()
     {
-        return $this->receivedMessages;
+        return $this->receivedMail;
     }
 
     /**
@@ -505,7 +505,7 @@ class User implements UserInterface
      */
     public function setReceivedMessage($receivedMessage)
     {
-        $this->receivedMessages[] = $receivedMessage;
+        $this->receivedMail[] = $receivedMessage;
         return $this;
     }
 

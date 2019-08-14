@@ -5,12 +5,12 @@ namespace WalkAroundBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Message
+ * Mail
  *
- * @ORM\Table(name="message")
- * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\MessageRepository")
+ * @ORM\Table(name="mail")
+ * @ORM\Entity(repositoryClass="WalkAroundBundle\Repository\MailRepository")
  */
-class Message
+class Mail
 {
     /**
      * @var int
@@ -38,7 +38,7 @@ class Message
     /**
      * @var User
      *
-     * @ORM\ManyToOne( targetEntity="User", inversedBy="sendMessages")
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="sendMail")
      * @ORM\JoinColumn(name="from_id", referencedColumnName="id")
      */
     private $fromUser;
@@ -46,7 +46,7 @@ class Message
     /**
      * @var User
      *
-     * @ORM\ManyToOne( targetEntity="User", inversedBy="receivedMessages")
+     * @ORM\ManyToOne( targetEntity="User", inversedBy="receivedMail")
      * @ORM\JoinColumn(name="for_id", referencedColumnName="id")
      */
     private $forUser;
@@ -103,7 +103,7 @@ class Message
      *
      * @param integer $fromId
      *
-     * @return Message
+     * @return Mail
      */
     public function setFromId($fromId)
     {
@@ -127,7 +127,7 @@ class Message
      *
      * @param integer $forId
      *
-     * @return Message
+     * @return Mail
      */
     public function setForId($forId)
     {
@@ -151,7 +151,7 @@ class Message
      *
      * @param integer $seen
      *
-     * @return Message
+     * @return Mail
      */
     public function setSeen($seen)
     {
@@ -180,7 +180,7 @@ class Message
 
     /**
      * @param User $fromUser
-     * @return Message
+     * @return Mail
      */
     public function setFromUser($fromUser)
     {
@@ -198,7 +198,7 @@ class Message
 
     /**
      * @param User $forUser
-     * @return Message
+     * @return Mail
      */
     public function setForUser($forUser)
     {
@@ -213,7 +213,7 @@ class Message
      *
      * @param \DateTime $seenOn
      *
-     * @return Message
+     * @return Mail
      */
     public function setSeenOn($seenOn)
     {
@@ -237,7 +237,7 @@ class Message
      *
      * @param \DateTime $addedOn
      *
-     * @return Message
+     * @return Mail
      */
     public function setAddedOn($addedOn)
     {
@@ -261,7 +261,7 @@ class Message
      *
      * @param string $about
      *
-     * @return Message
+     * @return Mail
      */
     public function setAbout($about)
     {
@@ -285,7 +285,7 @@ class Message
      *
      * @param string $content
      *
-     * @return Message
+     * @return Mail
      */
     public function setContent($content)
     {

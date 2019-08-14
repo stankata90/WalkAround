@@ -7,7 +7,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use WalkAroundBundle\Entity\Message;
+use WalkAroundBundle\Entity\Mail;
 
 class MessageNewType extends AbstractType
 {
@@ -21,7 +21,7 @@ class MessageNewType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => Message::class
+            'data_class' => Mail::class
         ));
     }
 
